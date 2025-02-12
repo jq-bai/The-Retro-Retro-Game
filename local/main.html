@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>The Retro Retro Game</title>
+    <link rel="stylesheet" href="ds.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <meta name="author" content="JQ Bai">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="main.js"></script>
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+</head>
+
+<body class="bodyCenter">
+    <section class="base">
+         <!--Landing default state-->
+        <div class="hero center" id="welcomeScreen" style="display: flex;">
+            <h3>Welcome to the</h3>
+            <h1>Retro Retro Game</h1>
+            <br>
+            <!--Lottie animation-->
+            <dotlottie-player src="https://lottie.host/a4c5d72a-3c2a-4d1a-9e3f-d2d955ff653f/IQdCcDyTiR.lottie" background="transparent" speed="1" style="max-width: 20em; max-height: 20em" loop autoplay></dotlottie-player>
+            <br>
+            <button class="cta" onclick="joinGame()">Join a Game</button>
+        </div>
+
+         <!--Sign up state-->
+        <div class="hero center" id="nameFormScreen" style="display: none;">
+            <h2>Enter your Name</h2>
+            <br>
+            <input class="textfield" type="text" id="displayName" placeholder="Hmmm..">
+            <br>
+            <button class="cta" onclick="submitName()">Next</button>
+        </div>
+
+         <!--Waiting for all users to join-->
+        <div id="holdingScreen" style="display: none;">
+            <h2 id="message"></h2>
+            <ul id="userList"></ul>
+        </div>
+
+         <!--All users joined-->
+         <div id="startingScreen" style="display: none;">
+            <h2 id="message"></h2>
+            <ul id="userList"></ul>
+        </div>
+    </section>
+</body>
+
+</html>

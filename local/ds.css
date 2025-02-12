@@ -10,6 +10,11 @@
     --color-white: #F5F5F5;
     --color-grey: #808080;
     --color-black: #1C1C1C;
+    /* Sizes */
+    --size-large: 3em;
+    --size-medium: 2em;
+    --size-small: 1em;
+    --size-xsmall: 0.5em;
     /* Border Radii */
     --border-radius-large: 0.75em;
     --border-radius-medium: 0.5em;
@@ -18,23 +23,24 @@
     /* Font Families */
     --font-family-default: "Monaco", monospace;
     /* Font Sizes */
-    --font-size-large: 2em;
-    --font-size-medium: 1em;
-    --font-size-small: 0.5em;
+    --font-size-large: 3em;
+    --font-size-medium: 2em;
+    --font-size-small: 1em;
+    --font-size-xsmall: 0.5em;
     /* Font Weights */
     --font-weight-black: 900;
     --font-weight-bold: 700;
     --font-weight-regular: 500;
     --font-weight-light: 300;
     /* Spacing */
-    --spacing-xlarge: 4em;
+    --spacing-xlarge: 3em;
     --spacing-large: 2em;
     --spacing-medium: 1em;
     --spacing-small: 0.5em;
 }
 
 /*Styles/
-/* Body styles */
+/* Global styles */
 body {
     background-color: var(--color-black);
 }
@@ -64,7 +70,7 @@ h3 {
 /* Paragraph styles */
 p {
     font-family: Monaco;
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
     color: var(--color-white);
 }
@@ -86,8 +92,40 @@ p {
     border-radius: var(--border-radius-large);
     padding: var(--spacing-small) var(--spacing-medium);
     font-family: var(--font-family-default);
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight-black);
+    transition: background-color 400ms, color 400ms;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.cta:hover {
+    background-color: var(--color-grey);
+    color: var(--color-white);
+}
+
+.cta:active {
+    background-color: var(--color-black);
+    color: var(--color-white);
+}
+
+/* Input classes */
+.textfield {
+    border-color: var(--color-white);
+    background-color: transparent;
+    color: var(--color-white);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-small) var(--spacing-medium);
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
+    max-width: 100%;
+    max-height: var(--size-large);
+    transition: background-color 400ms, color 400ms;
+}
+
+.textfield::placeholder {
+    color: var(--color-grey);
 }
 
 /* Container classes */
@@ -102,4 +140,13 @@ p {
 
 .base {
     padding: var(--spacing-xlarge);
+}
+
+.bodyCenter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
 }
