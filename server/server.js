@@ -38,6 +38,19 @@ app.post("/submit-name", (req, res) => {
     console.log(`Received display name: ${displayName}`);
 });
 
+// Handle ready status POST request
+app.post("/set-ready", (req, res) => {
+    const displayName = req.body.displayName;
+    const user = users.find(user => user.displayName === displayName);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    user.ready = true;
+    console.log(`User ${displayName} is ready`);
+    res.json({ message: `${displayName} is ready`, users });
+});
+
 // Create HTTP server
 const server = http.createServer(app);
 

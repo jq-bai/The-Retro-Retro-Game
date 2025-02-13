@@ -35,6 +35,27 @@ async function submitName() {
     }
 }
 
+async function setReady(displayName) {
+    try {
+        const response = await fetch("/set-ready", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ displayName })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            console.log(data.message);
+            updateUserList(data.users);
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        console.error("Error setting ready status:", error);
+    }
+}
+
 function updateUserList(users) {
     const userList = document.getElementById("userList");
     userList.innerHTML = ""; // Clear the existing list

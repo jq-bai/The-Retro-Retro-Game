@@ -45,6 +45,25 @@ body {
     background-color: var(--color-black);
 }
 
+/* Style for the unordered list */
+ul {
+    list-style-type: disc;
+    border-color: var(--color-white);
+    background-color: transparent;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-small) var(--spacing-medium);
+    color: var(--color-white);
+    font-family: Monaco;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
+    
+}
+
+/* Style for the list items */
+ul li {
+    margin-bottom: var(--spacing-small);
+}
+
 /* Header styles */
 h1 {
     font-family: Monaco;
