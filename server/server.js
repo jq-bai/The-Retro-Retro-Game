@@ -41,9 +41,7 @@ app.post("/submit-name", (req, res) => {
 
 // Broadcast the list of users to all connected clients
 const broadcastUserList = () => {
-    users.forEach(user => {
-        console.log(`Broadcasting user list: ${users.join(", ")}`);
-    });
+    console.log(`Broadcasting user list: ${users.join(", ")}`);
 };
 
 // Create HTTP server
