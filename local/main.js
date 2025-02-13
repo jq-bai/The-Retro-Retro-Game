@@ -32,7 +32,7 @@ async function submitName() {
         return;
     }
 
-    const port = 8000;
+    const port = 443; // Use port 443 for HTTPS/WSS
     ws = new WebSocket(`wss://${publicIp}:${port}`);
 
     ws.onopen = () => {
