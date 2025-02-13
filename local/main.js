@@ -1,3 +1,6 @@
+let displayName = null;
+let eventSource = null;
+
 function joinGame() {
     console.log("Joining a game");
     document.getElementById("welcomeScreen").style.display = "none";
@@ -5,7 +8,7 @@ function joinGame() {
 }
 
 async function submitName() {
-    const displayName = document.getElementById("displayName").value;
+    displayName = document.getElementById("displayName").value;
 
     if (!displayName) {
         alert("Please enter a non-invisible name.");
@@ -27,6 +30,15 @@ async function submitName() {
             document.getElementById("holdingScreen").style.display = "flex";
             document.getElementById("message").innerText = data.message;
             updateUserList(data.users);
+
+            // Initialize EventSource after displayName is set
+            eventSource = new EventSource(`/events?displayName=${displayName}`);
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'userList') {
+                    updateUserList(data.users);
+                }
+            };
         } else {
             alert(data.error);
         }
@@ -35,7 +47,7 @@ async function submitName() {
     }
 }
 
-async function setReady(displayName) {
+async function setReady() {
     try {
         const response = await fetch("/set-ready", {
             method: "POST",
@@ -59,9 +71,9 @@ async function setReady(displayName) {
 function updateUserList(users) {
     const userList = document.getElementById("userList");
     userList.innerHTML = ""; // Clear the existing list
-    users.forEach(name => {
-        const listItem = document.createElement("li");
-        listItem.textContent = name;
+    users.forEach(user => {
+        const listItem = document.createElement("ul");
+        listItem.textContent = user.displayName + (user.ready ? ' (Ready)' : '');
         userList.appendChild(listItem);
     });
 }

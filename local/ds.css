@@ -47,7 +47,7 @@ body {
 
 /* Style for the unordered list */
 ul {
-    list-style-type: disc;
+    list-style-type: none;
     border-color: var(--color-white);
     background-color: transparent;
     border-radius: var(--border-radius-medium);

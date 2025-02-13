@@ -13,15 +13,17 @@ app.use(bodyParser.json());
 // Serve static files from the "local" directory
 app.use(express.static(path.join(__dirname, "../local")));
 
-// Handle requests for the main HTML file
-app.get("/", (req, res) => {
-    console.log('HTML file served');
-    res.sendFile(path.join(__dirname, "../local/main.html"));
-});
-
 // Store connected users
 let users = [];
 const maxUsers = 10;
+
+// Store connected clients for SSE
+let clients = [];
+
+// Handle requests for the main HTML file
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../local/main.html"));
+});
 
 // Handle submitName POST request
 app.post("/submit-name", (req, res) => {
@@ -33,9 +35,12 @@ app.post("/submit-name", (req, res) => {
     if (users.length >= maxUsers) {
         return res.status(403).json({ error: "Server is full. Please try again later." });
     }
-    users.push(displayName);
-    res.json({ message: `Welcome, ${displayName}!`, users });
+
+    const user = { displayName, ready: false, res: null };
+    users.push(user);
     console.log(`Received display name: ${displayName}`);
+    res.json({ message: `Welcome, ${displayName}!`, users: users.map(({ res, ...user }) => user) });
+    broadcastUserList();
 });
 
 // Handle ready status POST request
@@ -48,8 +53,40 @@ app.post("/set-ready", (req, res) => {
 
     user.ready = true;
     console.log(`User ${displayName} is ready`);
-    res.json({ message: `${displayName} is ready`, users });
+    res.json({ message: `${displayName} is ready`, users: users.map(({ res, ...user }) => user) });
+    broadcastUserList();
 });
+
+// SSE endpoint to send updates to clients
+app.get("/events", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const displayName = req.query.displayName;
+    const user = users.find(user => user.displayName === displayName);
+    if (user) {
+        user.res = res;
+    }
+
+    clients.push(res);
+    console.log(`Client connected: ${displayName}`);
+
+    req.on("close", () => {
+        clients = clients.filter(client => client !== res);
+        users = users.filter(user => user.res !== res);
+        console.log(`Client disconnected: ${displayName}`);
+        broadcastUserList();
+    });
+});
+
+// Function to broadcast messages to all connected clients
+function broadcastUserList() {
+    const userList = JSON.stringify({ type: 'userList', users: users.map(({ res, ...user }) => user) });
+    clients.forEach(client => {
+        client.write(`data: ${userList}\n\n`);
+    });
+}
 
 // Create HTTP server
 const server = http.createServer(app);
