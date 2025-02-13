@@ -6,23 +6,12 @@ const path = require("path");
 const axios = require("axios");
 
 const host = "0.0.0.0"; // Bind to all available network interfaces
-const port = process.env.PORT || 8000; // Use the port provided by Render
+const port = process.env.PORT || 10000; // Use the port provided by Render
 
-// Load SSL certificate and key from environment variables or default paths
+// Load SSL certificate and key
 const options = {
-    key: process.env.SSL_KEY || fs.readFileSync('ssl/private.key'), // Replace with the path to your private key
-    cert: process.env.SSL_CERT || fs.readFileSync('ssl/certificate.crt') // Replace with the path to your certificate
-};
-
-/* Function to get the public IP address */
-const getPublicIpAddress = async () => {
-    try {
-        const response = await axios.get('https://api.ipify.org?format=json');
-        return response.data.ip;
-    } catch (error) {
-        console.error("Error fetching public IP address:", error);
-        return null;
-    }
+    key: fs.readFileSync('ssl/private.key'),
+    cert: fs.readFileSync('ssl/certificate.crt')
 };
 
 /* Initial load in of page */
