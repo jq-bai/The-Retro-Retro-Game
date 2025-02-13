@@ -1,5 +1,4 @@
 const https = require("https");
-// const WebSocket = require("ws");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
 const path = require("path");
@@ -51,56 +50,6 @@ const firstLoad = function(req, res) {
 
 /* Server start */
 const server = https.createServer(options, firstLoad);
-//const wss = new WebSocket.Server({ server });
-
-/*
-    let connections = [];
-    const maxConnections = 5;
-    let displayNames = [];
-
-    const broadcastDisplayNames = () => {
-        const message = JSON.stringify({ displayNames });
-        connections.forEach(conn => conn.send(message));
-    };
-
-    wss.on('connection', (ws) => {
-        console.log('New WebSocket connection established');
-
-        if (connections.length >= maxConnections) {
-            ws.send(JSON.stringify({ error: 'Server is busy. Please try again later.' }));
-            ws.close();
-            return;
-        }
-
-        connections.push(ws);
-        const userIndex = connections.length - 1;
-
-        ws.on('message', (message) => {
-            console.log('Received message:', message);
-            const data = JSON.parse(message);
-            if (data.displayName) {
-                displayNames[userIndex] = data.displayName;
-                ws.send(JSON.stringify({ message: `Welcome, ${data.displayName}!` }));
-                broadcastDisplayNames();
-                console.log(`${data.displayName} connected.`);
-                if (displayNames.length === maxConnections && displayNames.every(name => name !== undefined)) {
-                    // All users have connected and submitted their names
-                    connections.forEach((conn, index) => {
-                        conn.send(JSON.stringify({ message: 'All users connected. Game is starting soon.', displayNames, startGame: true }));
-                    });
-                    console.log(`All users connected, game starting.`);
-                }
-            }
-        });
-
-        ws.on('close', () => {
-            console.log('WebSocket connection closed');
-            connections = connections.filter(conn => conn !== ws);
-            displayNames = displayNames.filter((_, index) => index !== userIndex);
-            broadcastDisplayNames();
-        });
-    }); 
-*/
 
 
 /* Server live check */
