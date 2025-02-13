@@ -1,23 +1,18 @@
 const https = require("https");
 const fs = require("fs");
-const fsPromises = require("fs").promises;
 const path = require("path");
 
 const host = "0.0.0.0"; // Bind to all available network interfaces
 const port = process.env.PORT || 10000; // Use the port provided by Render
 
-// Decode base64 encoded SSL certificate and key
-const sslKey = fs.readFileSync(path.join(__dirname, "../ssl/private.key"));
-const sslCert = fs.readFileSync(path.join(__dirname, "../ssl/certificate.crt"));
-
-// Load SSL certificate and key
+// Load SSL certificate and key from files
 const options = {
-    key: sslKey,
-    cert: sslCert
+    key: fs.readFileSync(path.join(__dirname, "../ssl/private.key")),
+    cert: fs.readFileSync(path.join(__dirname, "../ssl/certificate.crt"))
 };
 
-/* Initial load in of page */
-const firstLoad = function(req, res) {
+// Function to handle requests
+const requestHandler = (req, res) => {
     let filePath = "";
     let contentType = "";
 
@@ -36,23 +31,22 @@ const firstLoad = function(req, res) {
         return;
     }
 
-    fsPromises.readFile(filePath)
-        .then(contents => {
-            res.setHeader("Content-Type", contentType);
-            res.writeHead(200);
-            res.end(contents);
-        })
-        .catch(err => {
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
             res.writeHead(500);
             res.end("Server Error");
-        });
+            return;
+        }
+        res.setHeader("Content-Type", contentType);
+        res.writeHead(200);
+        res.end(content);
+    });
 };
 
-/* Server start */
-const server = https.createServer(options, firstLoad);
+// Create HTTPS server
+const server = https.createServer(options, requestHandler);
 
-
-/* Server live check */
+// Start server
 server.listen(port, host, (err) => {
     if (err) {
         console.error("Error starting server:", err);
