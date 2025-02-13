@@ -56,8 +56,8 @@ app.post("/set-ready", (req, res) => {
     res.json({ message: `${displayName} is ${user.ready ? 'ready' : 'not ready'}`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
 
-    // Check if all users are ready
-    if (users.every(user => user.ready)) {
+    // Check if all users are ready and there are at least 2 users
+    if (users.length >= 2 && users.every(user => user.ready)) {
         broadcastStartGame();
     }
 });

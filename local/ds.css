@@ -188,3 +188,30 @@ p {
     border-radius: var(--border-radius-medium);
     padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-small) var(--spacing-medium);
 }
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    justify-items: center;
+    align-items: center;
+}
+
+.card {
+    width: 150px;
+    height: 200px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.card.ownCard {
+    width: 200px;
+    height: 250px;
+    background-color: #ffeb3b;
+    border: 2px solid #ff9800;
+}

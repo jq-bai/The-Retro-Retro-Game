@@ -1,6 +1,7 @@
 let displayName = null;
 let eventSource = null;
 let ready = false; // Define the ready variable
+let users = []; // Store the users globally
 
 function joinGame() {
     console.log("Joining a game");
@@ -30,14 +31,16 @@ async function submitName() {
             document.getElementById("nameFormScreen").style.display = "none";
             document.getElementById("holdingScreen").style.display = "flex";
             document.getElementById("message").innerText = data.message;
-            updateUserList(data.users);
+            users = data.users; // Store the users globally
+            updateUserList(users);
 
             // Initialize EventSource after displayName is set
             eventSource = new EventSource(`/events?displayName=${displayName}`);
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'userList') {
-                    updateUserList(data.users);
+                    users = data.users; // Update the global users
+                    updateUserList(users);
                 } else if (data.type === 'startGame') {
                     startGame();
                 }
@@ -64,7 +67,8 @@ async function setReady() {
             ready = !ready; // Toggle the ready state
             updateReadyButton(); // Update the button appearance and text
             console.log(data.message);
-            updateUserList(data.users);
+            users = data.users; // Update the global users
+            updateUserList(users);
         } else {
             alert(data.error);
         }
@@ -97,10 +101,26 @@ function updateReadyButton() {
 function startGame() {
     document.getElementById("holdingScreen").style.display = "none";
     document.getElementById("startingScreen").style.display = "flex";
-    setTimeout(goToGameStateInitial, 5000); // Transition to gameStateInitial after 5 seconds
+    setTimeout(goToGameState, 5000); // Transition to gameState after 5 seconds
 }
 
-function goToGameStateInitial() {
+function goToGameState() {
     document.getElementById("startingScreen").style.display = "none";
-    document.getElementById("gameStateInitial").style.display = "flex";
+    document.getElementById("gameState").style.display = "flex";
+    displayGameState(users, displayName); // Pass the users and displayName
+}
+
+function displayGameState(users, ownDisplayName) {
+    const cardGrid = document.getElementById('cardGrid');
+    cardGrid.innerHTML = ''; // Clear any existing cards
+
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        if (user.displayName === ownDisplayName) {
+            card.classList.add('ownCard');
+        }
+        card.textContent = user.displayName;
+        cardGrid.appendChild(card);
+    });
 }
