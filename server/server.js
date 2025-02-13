@@ -104,6 +104,10 @@ const server = https.createServer(options, firstLoad);
 
 
 /* Server live check */
-server.listen(port, host => {
-        console.log(`Server is running on https://${host}:${port}`);
+server.listen(port, host, (err) => {
+    if (err) {
+        console.error("Error starting server:", err);
+        process.exit(1);
+    }
+    console.log(`Server is running on https://${host}:${port}`);
 });
