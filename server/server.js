@@ -15,7 +15,7 @@ const options = {
 const requestHandler = (req, res) => {
     let filePath = "";
     let contentType = "";
-
+    console.log(`requested`);
     if (req.url === "/") {
         filePath = path.join(__dirname, "../local/main.html");
         contentType = "text/html";
