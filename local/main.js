@@ -1,5 +1,3 @@
-let ws;
-
 function joinGame() {
     console.log("Joining a game");
     document.getElementById("welcomeScreen").style.display = "none";
@@ -34,4 +32,14 @@ async function submitName() {
     } catch (error) {
         console.error("Error submitting name:", error);
     }
+}
+
+function updateUserList(users) {
+    const userList = document.getElementById("userList");
+    userList.innerHTML = ""; // Clear the existing list
+    users.forEach(name => {
+        const listItem = document.createElement("li");
+        listItem.textContent = name;
+        userList.appendChild(listItem);
+    });
 }

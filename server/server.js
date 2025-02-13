@@ -19,16 +19,32 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../local/main.html"));
 });
 
+// Store connected users
+let users = [];
+const maxUsers = 10;
+
 // Handle submitName POST request
 app.post("/submit-name", (req, res) => {
     const displayName = req.body.displayName;
     if (!displayName) {
         return res.status(400).json({ error: "Display name is required" });
     }
-    // Handle the display name (e.g., store it, broadcast it, etc.)
-    console.log(`Received display name: ${displayName}`);
+
+    if (users.length >= maxUsers) {
+        return res.status(403).json({ error: "Server is full. Please try again later." });
+    }
+    users.push(displayName);
+    broadcastUserList();
     res.json({ message: `Welcome, ${displayName}!` });
+    console.log(`Received display name: ${displayName}`);
 });
+
+// Broadcast the list of users to all connected clients
+const broadcastUserList = () => {
+    users.forEach(user => {
+        console.log(`Broadcasting user list: ${users.join(", ")}`);
+    });
+};
 
 // Create HTTP server
 const server = http.createServer(app);
