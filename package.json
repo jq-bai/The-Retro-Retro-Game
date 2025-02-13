@@ -13,19 +13,5 @@
   "devDependencies": {
     "nodemon": "^2.0.7"
   },
-  "license": "MIT",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Server",
-      "outputCapture": "std",
-      "program": "${workspaceFolder}/server/server.js",
-      "cwd": "${workspaceFolder}",
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ],
-      "runtimeExecutable": "/opt/homebrew/bin/node"
-    }
-  ]
+  "license": "MIT"
 }
