@@ -6,16 +6,20 @@ const path = require("path");
 const axios = require("axios");
 
 const host = "0.0.0.0"; // Bind to all available network interfaces
-const port = process.env.PORT || 10000; // Use the port provided by Render
+const port = process.env.PORT || 8000; // Use the port provided by Render
+
+// Decode base64 encoded SSL certificate and key
+const sslKey = Buffer.from(process.env.SSL_KEY, 'base64').toString('utf-8');
+const sslCert = Buffer.from(process.env.SSL_CERT, 'base64').toString('utf-8');
 
 // Load SSL certificate and key
 const options = {
-    key: fs.readFileSync('ssl/private.key'),
-    cert: fs.readFileSync('ssl/certificate.crt')
+    key: sslKey,
+    cert: sslCert
 };
 
 /* Initial load in of page */
-const firstLoad = async function(req, res) {
+const firstLoad = function(req, res) {
     let filePath = "";
     let contentType = "";
 
@@ -28,12 +32,6 @@ const firstLoad = async function(req, res) {
     } else if (req.url === "/ds.css") {
         filePath = path.join(__dirname, "../local/ds.css");
         contentType = "text/css";
-    } else if (req.url === "/public-ip") {
-        const publicIp = await getPublicIpAddress();
-        res.setHeader("Content-Type", "application/json");
-        res.writeHead(200);
-        res.end(JSON.stringify({ publicIp }));
-        return;
     } else {
         res.writeHead(404);
         res.end("Not Found");
@@ -107,12 +105,5 @@ wss.on('connection', (ws) => {
 
 /* Server live check */
 server.listen(port, host, async () => {
-    const publicIp = await getPublicIpAddress();
-    if (publicIp) {
         console.log(`Server is running on https://${host}:${port}`);
-        console.log(`Public IP address: ${publicIp}`);
-    } else {
-        console.log(`Server is running on https://${host}:${port}`);
-        console.log("Could not fetch public IP address.");
-    }
 });
