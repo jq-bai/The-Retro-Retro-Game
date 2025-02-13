@@ -6,7 +6,7 @@ const path = require("path");
 const axios = require("axios");
 
 const host = "0.0.0.0"; // Bind to all available network interfaces
-const port = 8000;
+const port = process.env.PORT || 8000; // Use the port provided by Render
 
 // Load SSL certificate and key
 const options = {
