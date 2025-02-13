@@ -9,8 +9,8 @@ const host = "0.0.0.0"; // Bind to all available network interfaces
 const port = process.env.PORT || 8000; // Use the port provided by Render
 
 // Decode base64 encoded SSL certificate and key
-const sslKey = Buffer.from(process.env.SSL_KEY, 'base64').toString('utf-8');
-const sslCert = Buffer.from(process.env.SSL_CERT, 'base64').toString('utf-8');
+const sslKey = fs.readFileSync(path.join(__dirname, "../ssl/private.key"));
+const sslCert = fs.readFileSync(path.join(__dirname, "../ssl/certificate.crt"));
 
 // Load SSL certificate and key
 const options = {
