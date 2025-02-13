@@ -1,18 +1,30 @@
 {
+  "name": "the-retro-retro-game",
   "version": "0.2.0",
+  "description": "A retro game",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "ws": "^7.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
   "configurations": [
-      {
-          "type": "node",
-          "request": "launch",
-          "name": "Launch Server",
-          "outputCapture": "std",
-          "program": "${workspaceFolder}/server/server.js",
-          "cwd": "${workspaceFolder}",
-          "outFiles": [
-              "${workspaceFolder}/**/*.js"
-          ],
-          "runtimeExecutable": "/opt/homebrew/bin/node"
-          
-      }
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Server",
+      "outputCapture": "std",
+      "program": "${workspaceFolder}/server/server.js",
+      "cwd": "${workspaceFolder}",
+      "outFiles": [
+        "${workspaceFolder}/**/*.js"
+      ],
+      "runtimeExecutable": "/opt/homebrew/bin/node"
+    }
   ]
 }
