@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "express": "^4.21.2",
     "ws": "^7.4.6"
   },
   "devDependencies": {
