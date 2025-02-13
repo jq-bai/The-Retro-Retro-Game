@@ -51,10 +51,15 @@ app.post("/set-ready", (req, res) => {
         return res.status(404).json({ error: "User not found" });
     }
 
-    user.ready = true;
-    console.log(`User ${displayName} is ready`);
-    res.json({ message: `${displayName} is ready`, users: users.map(({ res, ...user }) => user) });
+    user.ready = !user.ready; // Toggle the ready status
+    console.log(`User ${displayName} is ${user.ready ? 'ready' : 'not ready'}`);
+    res.json({ message: `${displayName} is ${user.ready ? 'ready' : 'not ready'}`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
+
+    // Check if all users are ready
+    if (users.every(user => user.ready)) {
+        broadcastStartGame();
+    }
 });
 
 // SSE endpoint to send updates to clients
@@ -85,6 +90,14 @@ function broadcastUserList() {
     const userList = JSON.stringify({ type: 'userList', users: users.map(({ res, ...user }) => user) });
     clients.forEach(client => {
         client.write(`data: ${userList}\n\n`);
+    });
+}
+
+// Function to broadcast start game message to all connected clients
+function broadcastStartGame() {
+    const startGameMessage = JSON.stringify({ type: 'startGame' });
+    clients.forEach(client => {
+        client.write(`data: ${startGameMessage}\n\n`);
     });
 }
 

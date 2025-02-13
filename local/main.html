@@ -35,21 +35,34 @@
 
          <!--Waiting for all users to join-->
         <div class="hero center" id="holdingScreen" style="display: none;">
+            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGZtbGc3OWI2Y21sYWU1bWU2d3B4M3plbGp6MXZwY293cGx1cnUzaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZR8teuiCs3AkSkzjnG/giphy.gif" alt="Computer man" style="max-width: 20em; max-height: 20em">            
+            <br>
             <h2 id="message"></h2>
             <br>    
             <p>Sit tight as we wait for more people to join and get ready!</p>
             <br>
-            <button class="cta" onclick="setReady()">I'm Ready</button>
+            <button class="cta" id="readyButton" onclick="setReady()">I'm Ready</button>
+            <br>
+            <br>
+            <div class="listBox">
+                <h3>Players</h3>
+                <br>
+                <ul id="userList"></ul>
+            </div>
+        </div>
+
+         <!--Game starting-->
+         <div class="hero center" id="startingScreen" style="display: none;">
+            <h2 id="message">Game is Starting!</h2>
             <br>
             <ul id="userList"></ul>
         </div>
 
-         <!--Game started-->
-         <div class="hero center" id="startingScreen" style="display: none;">
-            <h2 id="message"></h2>
-            <br>
-            <ul id="userList"></ul>
-        </div>
+        <!--Game state initial-->
+        <div class="hero center" id="gameStateInitial" style="display: none;">
+            <h2>Game State Initial</h2>
+            <!-- Add your game state initial content here -->
+         </div>
     </section>
 </body>
 

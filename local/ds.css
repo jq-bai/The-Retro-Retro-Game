@@ -15,6 +15,12 @@
     --size-medium: 2em;
     --size-small: 1em;
     --size-xsmall: 0.5em;
+    /* Border Widths */
+    --border-width-large: 0.25em;
+    --border-width-medium: 0.125em;
+    --border-width-small: 0.0625em;
+    --border-width-xsmall: 0.03125em;
+    --border-width-none: 0em;
     /* Border Radii */
     --border-radius-large: 0.75em;
     --border-radius-medium: 0.5em;
@@ -48,10 +54,6 @@ body {
 /* Style for the unordered list */
 ul {
     list-style-type: none;
-    border-color: var(--color-white);
-    background-color: transparent;
-    border-radius: var(--border-radius-medium);
-    padding: var(--spacing-small) var(--spacing-medium);
     color: var(--color-white);
     font-family: Monaco;
     font-size: var(--font-size-small);
@@ -131,6 +133,8 @@ p {
 /* Input classes */
 .textfield {
     border-color: var(--color-white);
+    border-style: solid;
+    border-width: var(--border-width-small);
     background-color: transparent;
     color: var(--color-white);
     border-radius: var(--border-radius-medium);
@@ -168,4 +172,19 @@ p {
     align-items: center;
     height: 100vh;
     width: 100%;
+}
+
+.listBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: auto;
+    border-style: solid;
+    border-color: var(--color-grey);
+    border-width: var(--border-width-xsmall);
+    background-color: transparent;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-small) var(--spacing-medium);
 }
