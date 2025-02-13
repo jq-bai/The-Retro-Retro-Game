@@ -6,7 +6,7 @@ function joinGame() {
     document.getElementById("nameFormScreen").style.display = "flex";
 }
 
-function submitName() {
+async function submitName() {
     const displayName = document.getElementById("displayName").value;
 
     if (!displayName) {
@@ -14,45 +14,24 @@ function submitName() {
         return;
     }
 
-    const host = window.location.hostname;
-    const port = window.location.port || 443; // Use the current port or default to 443 for HTTPS/WSS
-    ws = new WebSocket(`wss://${host}:${port}`);
-
-    ws.onopen = () => {
-        console.log('WebSocket connection opened');
-        ws.send(JSON.stringify({ displayName }));
-    };
-
-    ws.onmessage = (event) => {
-        console.log('Received message from server:', event.data);
-        const data = JSON.parse(event.data);
-
-        if (data.message) {
+    try {
+        const response = await fetch("/submit-name", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ displayName })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            console.log(data.message);
             document.getElementById("nameFormScreen").style.display = "none";
             document.getElementById("holdingScreen").style.display = "flex";
             document.getElementById("message").innerText = data.message;
+        } else {
+            alert(data.error);
         }
-        if (data.displayNames) {
-            const userList = document.getElementById("userList");
-            userList.innerHTML = ""; // Clear the existing list
-            data.displayNames.forEach(name => {
-                const listItem = document.createElement("li");
-                listItem.textContent = name;
-                userList.appendChild(listItem);
-            });
-        }
-        if (data.startGame) {
-            document.getElementById("signUpConfirmScreen").style.display = "none";
-            document.getElementById("startingScreen").style.display = "flex";
-            document.getElementById("message").innerText = data.displayNames;
-        }
-    };
-
-    ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-    };
-
-    ws.onclose = () => {
-        console.log("WebSocket connection closed");
-    };
+    } catch (error) {
+        console.error("Error submitting name:", error);
+    }
 }
