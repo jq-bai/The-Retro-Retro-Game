@@ -36,10 +36,6 @@ async function submitName() {
 }
 
 function updateUserList(users) {
-    if (!Array.isArray(users)) {
-        console.error("Invalid user list:", users);
-        return;
-    }
     const userList = document.getElementById("userList");
     userList.innerHTML = ""; // Clear the existing list
     users.forEach(name => {

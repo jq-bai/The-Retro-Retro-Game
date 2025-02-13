@@ -34,15 +34,9 @@ app.post("/submit-name", (req, res) => {
         return res.status(403).json({ error: "Server is full. Please try again later." });
     }
     users.push(displayName);
-    broadcastUserList();
-    res.json({ message: `Welcome, ${displayName}!` });
+    res.json({ message: `Welcome, ${displayName}!`, users });
     console.log(`Received display name: ${displayName}`);
 });
-
-// Broadcast the list of users to all connected clients
-const broadcastUserList = () => {
-    console.log(`Broadcasting user list: ${users.join(", ")}`);
-};
 
 // Create HTTP server
 const server = http.createServer(app);
