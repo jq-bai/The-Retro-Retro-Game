@@ -8,10 +8,10 @@ const axios = require("axios");
 const host = "0.0.0.0"; // Bind to all available network interfaces
 const port = process.env.PORT || 8000; // Use the port provided by Render
 
-// Load SSL certificate and key
+// Load SSL certificate and key from environment variables or default paths
 const options = {
-    key: fs.readFileSync('ssl/private.key'), // Replace with the path to your private key
-    cert: fs.readFileSync('ssl/certificate.crt') // Replace with the path to your certificate
+    key: process.env.SSL_KEY || fs.readFileSync('ssl/private.key'), // Replace with the path to your private key
+    cert: process.env.SSL_CERT || fs.readFileSync('ssl/certificate.crt') // Replace with the path to your certificate
 };
 
 /* Function to get the public IP address */
