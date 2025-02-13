@@ -6,7 +6,7 @@ const path = require("path");
 const axios = require("axios");
 
 const host = "0.0.0.0"; // Bind to all available network interfaces
-const port = process.env.PORT || 8000; // Use the port provided by Render
+const port = process.env.PORT || 10000; // Use the port provided by Render
 
 // Decode base64 encoded SSL certificate and key
 const sslKey = fs.readFileSync(path.join(__dirname, "../ssl/private.key"));
@@ -104,6 +104,6 @@ wss.on('connection', (ws) => {
 });
 
 /* Server live check */
-server.listen(port, host, async () => {
+server.listen(port, host => {
         console.log(`Server is running on https://${host}:${port}`);
 });
