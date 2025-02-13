@@ -1,12 +1,24 @@
 let ws;
 
+async function getPublicIp() {
+    try {
+        const response = await fetch('/public-ip');
+        const data = await response.json();
+        console.log('Fetched public IP:', data.publicIp);
+        return data.publicIp;
+    } catch (error) {
+        console.error("Error fetching public IP address:", error);
+        return null;
+    }
+}
+
 function joinGame() {
     console.log("Joining a game");
     document.getElementById("welcomeScreen").style.display = "none";
     document.getElementById("nameFormScreen").style.display = "flex";
 }
 
-function submitName() {
+async function submitName() {
     const displayName = document.getElementById("displayName").value;
 
     if (!displayName) {
@@ -14,13 +26,22 @@ function submitName() {
         return;
     }
 
-    ws = new WebSocket("ws://192.168.18.28:8000");
+    const publicIp = await getPublicIp();
+    if (!publicIp) {
+        alert("Could not fetch public IP address. Please try again later.");
+        return;
+    }
+
+    const port = 8000;
+    ws = new WebSocket(`wss://${publicIp}:${port}`);
 
     ws.onopen = () => {
+        console.log('WebSocket connection opened');
         ws.send(JSON.stringify({ displayName }));
     };
 
     ws.onmessage = (event) => {
+        console.log('Received message from server:', event.data);
         const data = JSON.parse(event.data);
 
         if (data.message) {

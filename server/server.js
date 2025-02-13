@@ -1,13 +1,32 @@
-const http = require("http");
+const https = require("https");
 const WebSocket = require("ws");
-const fs = require("fs").promises;
+const fs = require("fs");
+const fsPromises = require("fs").promises;
 const path = require("path");
+const axios = require("axios");
 
-const host = "192.168.18.28";
+const host = "0.0.0.0"; // Bind to all available network interfaces
 const port = 8000;
 
+// Load SSL certificate and key
+const options = {
+    key: fs.readFileSync('ssl/private.key'), // Replace with the path to your private key
+    cert: fs.readFileSync('ssl/certificate.crt') // Replace with the path to your certificate
+};
+
+/* Function to get the public IP address */
+const getPublicIpAddress = async () => {
+    try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        return response.data.ip;
+    } catch (error) {
+        console.error("Error fetching public IP address:", error);
+        return null;
+    }
+};
+
 /* Initial load in of page */
-const firstLoad = function(req, res) {
+const firstLoad = async function(req, res) {
     let filePath = "";
     let contentType = "";
 
@@ -20,13 +39,19 @@ const firstLoad = function(req, res) {
     } else if (req.url === "/ds.css") {
         filePath = path.join(__dirname, "../local/ds.css");
         contentType = "text/css";
+    } else if (req.url === "/public-ip") {
+        const publicIp = await getPublicIpAddress();
+        res.setHeader("Content-Type", "application/json");
+        res.writeHead(200);
+        res.end(JSON.stringify({ publicIp }));
+        return;
     } else {
         res.writeHead(404);
         res.end("Not Found");
         return;
     }
 
-    fs.readFile(filePath)
+    fsPromises.readFile(filePath)
         .then(contents => {
             res.setHeader("Content-Type", contentType);
             res.writeHead(200);
@@ -39,8 +64,8 @@ const firstLoad = function(req, res) {
 };
 
 /* Server start */
-const server = http.createServer(firstLoad);
-const wss = new WebSocket.Server({server});
+const server = https.createServer(options, firstLoad);
+const wss = new WebSocket.Server({ server });
 
 let connections = [];
 const maxConnections = 5;
@@ -54,6 +79,8 @@ const broadcastDisplayNames = () => {
 
 /* Starting user management */
 wss.on('connection', (ws) => {
+    console.log('New WebSocket connection established');
+
     if (connections.length >= maxConnections) {
         ws.send(JSON.stringify({ error: 'Server is busy. Please try again later.' }));
         ws.close();
@@ -64,6 +91,7 @@ wss.on('connection', (ws) => {
     const userIndex = connections.length - 1;
 
     ws.on('message', (message) => {
+        console.log('Received message:', message);
         const data = JSON.parse(message);
         if (data.displayName) {
             displayNames[userIndex] = data.displayName;
@@ -81,6 +109,7 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        console.log('WebSocket connection closed');
         connections = connections.filter(conn => conn !== ws);
         displayNames = displayNames.filter((_, index) => index !== userIndex);
         broadcastDisplayNames();
@@ -88,6 +117,13 @@ wss.on('connection', (ws) => {
 });
 
 /* Server live check */
-server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+server.listen(port, host, async () => {
+    const publicIp = await getPublicIpAddress();
+    if (publicIp) {
+        console.log(`Server is running on https://${host}:${port}`);
+        console.log(`Public IP address: ${publicIp}`);
+    } else {
+        console.log(`Server is running on https://${host}:${port}`);
+        console.log("Could not fetch public IP address.");
+    }
 });
