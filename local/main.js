@@ -26,6 +26,7 @@ async function submitName() {
             document.getElementById("nameFormScreen").style.display = "none";
             document.getElementById("holdingScreen").style.display = "flex";
             document.getElementById("message").innerText = data.message;
+            updateUserList(data.users);
         } else {
             alert(data.error);
         }
