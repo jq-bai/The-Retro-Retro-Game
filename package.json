@@ -2,17 +2,28 @@
   "name": "the-retro-retro-game",
   "version": "0.2.0",
   "description": "A retro game",
-  "main": "server/server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node backend/server.js",
+    "client-install": "cd frontend && npm install",
+    "client-build": "cd frontend && npm run build",
+    "client-start": "cd frontend && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon backend/server.js",
+    "build": "cd frontend && npm run build"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "@dotlottie/player-component": "^2.7.12",
+    "axios": "^1.7.9",
     "express": "^4.21.2",
-    "ws": "^7.4.6"
+    "react-lottie-player": "^2.1.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9"
   },
   "license": "MIT"
 }
