@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const StartingScreen = () => {
+const StartingScreen = ({ userList, onCountdownComplete }) => {
+    const [countdown, setCountdown] = useState(5);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown(prevCountdown => {
+                if (prevCountdown === 1) {
+                    clearInterval(timer);
+                    onCountdownComplete();
+                }
+                return prevCountdown - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [onCountdownComplete]);
+
     return (
         <div className="hero center">
-            <h2 id="message">Game is Starting!</h2>
+            <h2 id="message">Game is Starting in {countdown} seconds!</h2>
             <br />
-            <ul id="userList"></ul>
+            <div className="listBox">
+                <h3>Players in the Game</h3>
+                <br />
+                <ul>
+                    {userList.map((user, index) => (
+                        <li key={index}>
+                            {user.displayName}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };

@@ -11,30 +11,7 @@ function App() {
     const [playerName, setPlayerName] = useState('');
     const [isReady, setIsReady] = useState(false);
     const [userList, setUserList] = useState([]);
-
-    useEffect(() => {
-        // Fetch the initial list of users from the server
-        axios.get('/api/users')
-            .then(response => {
-                setUserList(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching user list:', error);
-            });
-
-        // Set up SSE connection
-        const eventSource = new EventSource('/events');
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'userList') {
-                setUserList(data.users);
-            }
-        };
-
-        return () => {
-            eventSource.close();
-        };
-    }, []);
+    const [eventSource, setEventSource] = useState(null);
 
     const joinGame = () => {
         setCurrentScreen('nameForm');
@@ -46,6 +23,18 @@ function App() {
                 setPlayerName(name);
                 setUserList(response.data.users);
                 setCurrentScreen('holding');
+
+                // Set up SSE connection after user has entered their display name
+                const newEventSource = new EventSource(`/events?displayName=${name}`);
+                newEventSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'userList') {
+                        setUserList(data.users);
+                    } else if (data.type === 'startGame') {
+                        setCurrentScreen('starting');
+                    }
+                };
+                setEventSource(newEventSource);
             })
             .catch(error => {
                 console.error('Error submitting name:', error);
@@ -55,21 +44,29 @@ function App() {
     const setReady = () => {
         axios.post('/set-ready', { displayName: playerName })
             .then(response => {
-                setIsReady(true);
-                setCurrentScreen('starting');
+                setIsReady(prevIsReady => !prevIsReady);
             })
             .catch(error => {
                 console.error('Error setting ready status:', error);
             });
     };
 
+    useEffect(() => {
+        // Clean up the EventSource connection when the component unmounts
+        return () => {
+            if (eventSource) {
+                eventSource.close();
+            }
+        };
+    }, [eventSource]);
+
     return (
         <div>
             {currentScreen === 'welcome' && <WelcomeScreen joinGame={joinGame} />}
             {currentScreen === 'nameForm' && <NameFormScreen onSubmit={submitName} />}
-            {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} />}
-            {currentScreen === 'starting' && <StartingScreen />}
-            {isReady && <GameState />}
+            {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} isReady={isReady} />}
+            {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />}
+            {currentScreen === 'gameState' && <GameState />}
         </div>
     );
 }

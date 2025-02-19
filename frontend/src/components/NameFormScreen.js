@@ -11,12 +11,15 @@ const NameFormScreen = ({ onSubmit }) => {
         event.preventDefault();
         if (displayName) {
             onSubmit(displayName);
+        } else {
+            alert("Please enter a display name.");
         }
     };
 
     return (
         <div className="hero center">
             <h2>Enter your Name</h2>
+            <br />
             <form onSubmit={handleSubmit}>
                 <input
                     className="textfield"
@@ -25,6 +28,7 @@ const NameFormScreen = ({ onSubmit }) => {
                     onChange={handleChange}
                     placeholder="Hmmm.."
                 />
+                <br />
                 <br />
                 <button className="cta" type="submit">Next</button>
             </form>

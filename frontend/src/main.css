@@ -9,6 +9,7 @@
     /* Colors */
     --color-white: #F5F5F5;
     --color-grey: #808080;
+    --color-grey2: #2C2C2C;
     --color-black: #1C1C1C;
     /* Sizes */
     --size-large: 3em;
@@ -22,6 +23,7 @@
     --border-width-xsmall: 0.03125em;
     --border-width-none: 0em;
     /* Border Radii */
+    --border-radius-xlarge: 1em;
     --border-radius-large: 0.75em;
     --border-radius-medium: 0.5em;
     --border-radius-small: 0.25em;
@@ -39,6 +41,7 @@
     --font-weight-regular: 500;
     --font-weight-light: 300;
     /* Spacing */
+    --spacing-xlarge2: 4em;
     --spacing-xlarge: 3em;
     --spacing-large: 2em;
     --spacing-medium: 1em;
@@ -48,7 +51,7 @@
 /*Styles/
 /* Global styles */
 body {
-    background-color: var(--color-black);
+    background-color: var(--color-grey2);
 }
 
 /* Style for the unordered list */
@@ -159,10 +162,11 @@ p {
     align-items: center;
     height: 100%;
     width: 100%;
-}
-
-.base {
-    padding: var(--spacing-xlarge);
+    padding: var(--spacing-xlarge2);
+    background-color: var(--color-black);
+    border-radius: var(--border-radius-xlarge);
+    width: max-content;
+    min-width: 100%;
 }
 
 .bodyCenter {
@@ -180,7 +184,7 @@ p {
     justify-content: center;
     align-items: center;
     height: auto;
-    width: auto;
+    width: 100%;
     border-style: solid;
     border-color: var(--color-grey);
     border-width: var(--border-width-xsmall);

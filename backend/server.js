@@ -53,11 +53,11 @@ app.post("/set-ready", (req, res) => {
     const displayName = req.body.displayName;
     const user = users.find(user => user.displayName === displayName);
     if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({ error: "Client not found" });
     }
 
     user.ready = !user.ready; // Toggle the ready status
-    console.log(`User ${displayName} is ${user.ready ? 'ready' : 'not ready'}`);
+    console.log(`Client ${displayName} is ${user.ready ? 'ready' : 'not ready'}`);
     res.json({ message: `${displayName} is ${user.ready ? 'ready' : 'not ready'}`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
 
@@ -106,6 +106,14 @@ function broadcastStartGame() {
     });
 }
 
+// Function to clean up data
+function cleanup() {
+    users = [];
+    clients.forEach(client => client.end());
+    clients = [];
+    console.log("Server data cleared.");
+}
+
 // Create HTTP server
 const server = http.createServer(app);
 
@@ -116,4 +124,14 @@ server.listen(port, host, (err) => {
         process.exit(1);
     }
     console.log(`Server is running on http://${host}:${port}`);
+});
+
+// Handle server shutdown
+process.on('SIGINT', () => {
+    console.log("Shutting down server...");
+    cleanup();
+    server.close(() => {
+        console.log("Server closed.");
+        process.exit(0);
+    });
 });
