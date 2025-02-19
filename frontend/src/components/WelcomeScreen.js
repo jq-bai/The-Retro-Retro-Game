@@ -8,7 +8,7 @@ const WelcomeScreen = ({ joinGame }) => {
             <h1>Retro Retro Game</h1>
             <br />
             <DotLottieReact
-                src="https://lottie.host/a4c5d72a-3c2a-4d1a-9e3f-d2d955ff653f/IQdCcDyTiR.lottie"
+                src="https://lottie.host/be15b006-9c70-427a-b438-2ff303d51a7f/Osti3Ta6ZB.lottie"
                 loop
                 autoplay
             />
