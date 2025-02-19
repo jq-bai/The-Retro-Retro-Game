@@ -1,7 +1,7 @@
 {
   "name": "the-retro-retro-game",
-  "version": "0.2.0",
-  "description": "A retro game",
+  "version": "1.0.0",
+  "description": "A retro-feeling retro(spective) game that makes it easier for teams to bond, be it in person or online.",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
@@ -25,5 +25,5 @@
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9"
   },
-  "license": "MIT"
+  "license": "Apache-2.0"
 }
