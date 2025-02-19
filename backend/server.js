@@ -104,6 +104,7 @@ function broadcastStartGame() {
     clients.forEach(client => {
         client.write(`data: ${startGameMessage}\n\n`);
     });
+    console.log(`All clients are ready, game starting`);
 }
 
 // Function to clean up data

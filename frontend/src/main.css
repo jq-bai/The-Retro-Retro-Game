@@ -193,29 +193,46 @@ p {
     padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-small) var(--spacing-medium);
 }
 
-.cardGrid {
+.user-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    justify-items: center;
-    align-items: center;
-}
-
-.card {
-    width: 150px;
-    height: 200px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2em;
-    text-align: center;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium);
+    width: 100%;
+    max-width: 800px;
 }
 
-.card.ownCard {
-    width: 200px;
-    height: 250px;
-    background-color: #ffeb3b;
-    border: 2px solid #ff9800;
+.user-card {
+    background-color: transparent;
+    border-color: var(--color-grey);
+    border-style: solid;
+    border-width: var(--border-width-medium);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-medium);
+    text-align: center;
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-white);
+}
+
+.user-card:empty {
+    display: none;
+}
+
+.prompt-card {
+    background-color: transparent;
+    border-color: var(--color-white);
+    border-style: solid;
+    border-width: var(--border-width-medium);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-large);
+    text-align: center;
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    width: auto;
 }

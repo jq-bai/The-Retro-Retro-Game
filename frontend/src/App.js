@@ -4,7 +4,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import NameFormScreen from './components/NameFormScreen';
 import HoldingScreen from './components/HoldingScreen';
 import StartingScreen from './components/StartingScreen';
-import GameState from './components/GameState';
+import GameStateInitial from './components/GameStateInitial';
 
 function App() {
     const [currentScreen, setCurrentScreen] = useState('welcome');
@@ -66,7 +66,7 @@ function App() {
             {currentScreen === 'nameForm' && <NameFormScreen onSubmit={submitName} />}
             {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} isReady={isReady} />}
             {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />}
-            {currentScreen === 'gameState' && <GameState />}
+            {currentScreen === 'gameState' && <GameStateInitial userList={userList} />}
         </div>
     );
 }
