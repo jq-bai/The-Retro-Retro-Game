@@ -1,21 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const GameStateInitial = ({ userList, displayName }) => {
-    const prompts = [
-        "Describe the past month of work",
-        "Describe crybaby",
-        "Describe bill split",
-        "Describe onboarding",
-        "Describe tokens",
-        "Describe the huddle room",
-        "Describe the roadmap",
-        "Describe the current workflow process",
-        "Describe your current project",
-        "Describe Figma",
-    ];
-
     const [currentPrompt, setCurrentPrompt] = useState("Click to Reveal Your Prompt");
     const [isClicked, setIsClicked] = useState(false);
+    const [commonPrompt, setCommonPrompt] = useState("");
+    const [differentPrompt, setDifferentPrompt] = useState("");
+    const [differentPromptUser, setDifferentPromptUser] = useState("");
     const eventSourceRef = useRef(null);
 
     useEffect(() => {
@@ -27,6 +17,12 @@ const GameStateInitial = ({ userList, displayName }) => {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
+                if (data.type === 'promptAssignment') {
+                    setCommonPrompt(data.commonPrompt);
+                    setDifferentPrompt(data.differentPrompt);
+                    setDifferentPromptUser(data.differentPromptUser);
+                    console.log("Prompt received from server:", data);
+                }
                 // Handle other event types if needed
             };
 
@@ -41,12 +37,27 @@ const GameStateInitial = ({ userList, displayName }) => {
                 eventSourceRef.current = null;
             };
         }
+
+        // Notify the server that the GameStateInitial component has loaded
+        fetch("/game-state-initial-loaded", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ displayName }),
+        }).then(response => response.json())
+          .then(data => console.log(data.message))
+          .catch(error => console.error("Error notifying server:", error));
+
     }, [displayName]);
 
     const handlePromptClick = () => {
         if (!isClicked) {
-            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-            setCurrentPrompt(randomPrompt);
+            if (displayName === differentPromptUser) {
+                setCurrentPrompt(differentPrompt);
+            } else {
+                setCurrentPrompt(commonPrompt);
+            }
             setIsClicked(true);
         }
     };
@@ -63,6 +74,8 @@ const GameStateInitial = ({ userList, displayName }) => {
                         <div className="user-card">
                             {user.displayName}
                         </div>
+                        <br />
+                        <button className="cta">Vote</button>
                     </div>
                 ))}
             </div>

@@ -20,6 +20,20 @@ const maxUsers = 10;
 // Store connected clients for SSE
 let clients = [];
 
+// Prompts
+const prompts = [
+    "Describe the past month of work",
+    "Describe crybaby",
+    "Describe bill split",
+    "Describe onboarding",
+    "Describe tokens",
+    "Describe the huddle room",
+    "Describe the roadmap",
+    "Describe the current workflow process",
+    "Describe your current project",
+    "Describe Figma",
+];
+
 // Handle requests for the main HTML file
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
@@ -74,6 +88,11 @@ app.get("/events", (req, res) => {
     res.setHeader("Connection", "keep-alive");
 
     const displayName = req.query.displayName;
+    if (!displayName) {
+        res.status(400).send("Display name is required");
+        return;
+    }
+
     const user = users.find(user => user.displayName === displayName);
     if (user) {
         user.res = res;
@@ -90,6 +109,13 @@ app.get("/events", (req, res) => {
     });
 });
 
+// Endpoint to notify the server that the GameStateInitial component has loaded
+app.post("/game-state-initial-loaded", (req, res) => {
+    console.log("Game has started");
+    assignPrompts();
+    res.json({ message: "Prompts assigned" });
+});
+
 // Function to broadcast messages to all connected clients
 function broadcastUserList() {
     const userList = JSON.stringify({ type: 'userList', users: users.map(({ res, ...user }) => user) });
@@ -104,15 +130,34 @@ function broadcastStartGame() {
     clients.forEach(client => {
         client.write(`data: ${startGameMessage}\n\n`);
     });
-    console.log(`All clients are ready, game starting`);
+    console.log("All clients loaded, game is starting");
 }
 
-// Function to clean up data
-function cleanup() {
-    users = [];
-    clients.forEach(client => client.end());
-    clients = [];
-    console.log("Server data cleared.");
+// Function to assign prompts and broadcast to all clients
+function assignPrompts() {
+    if (users.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * users.length);
+    const differentPromptUser = users[randomIndex].displayName;
+    const commonPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+    let differentPrompt;
+
+    do {
+        differentPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+    } while (differentPrompt === commonPrompt);
+
+    const promptAssignment = {
+        type: 'promptAssignment',
+        commonPrompt,
+        differentPromptUser,
+        differentPrompt,
+    };
+
+    clients.forEach(client => {
+        client.write(`data: ${JSON.stringify(promptAssignment)}\n\n`);
+    });
+
+    console.log("Prompts assigned and broadcasted");
 }
 
 // Create HTTP server
@@ -136,3 +181,11 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+
+// Function to clean up data
+function cleanup() {
+    users = [];
+    clients.forEach(client => client.end());
+    clients = [];
+    console.log("Server data cleared.");
+}
