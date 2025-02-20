@@ -194,14 +194,21 @@ p {
 }
 
 .user-grid {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    grid-template-columns: repeat(5, 1fr);
     gap: var(--spacing-medium);
     padding: var(--spacing-medium);
     width: 100%;
-    max-width: 800px;
+    margin: 0 auto;
+}
+
+.user-card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 calc(20% - var(--spacing-medium)); /* Set the width to fill up remaining space, up to 5 containers per row */
+    box-sizing: border-box;
 }
 
 .user-card {
@@ -216,10 +223,11 @@ p {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
     color: var(--color-white);
-}
-
-.user-card:empty {
-    display: none;
+    width: 100%; /* Ensure the card takes up the full width of the container */
+    box-sizing: border-box;
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflow text */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .prompt-card {
