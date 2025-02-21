@@ -20,20 +20,6 @@ const maxUsers = 10;
 // Store connected clients for SSE
 let clients = [];
 
-// Prompts
-const prompts = [
-    "Describe the past month of work",
-    "Describe crybaby",
-    "Describe bill split",
-    "Describe onboarding",
-    "Describe tokens",
-    "Describe the huddle room",
-    "Describe the roadmap",
-    "Describe the current workflow process",
-    "Describe your current project",
-    "Describe Figma",
-];
-
 // Handle requests for the main HTML file
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
@@ -111,9 +97,8 @@ app.get("/events", (req, res) => {
 
 // Endpoint to notify the server that the GameStateInitial component has loaded
 app.post("/game-state-initial-loaded", (req, res) => {
-    console.log("Game has started");
-    assignPrompts();
-    res.json({ message: "Prompts assigned" });
+    console.log("GameStateInitial component has loaded");
+    res.json({ message: "Game loaded" });
 });
 
 // Function to broadcast messages to all connected clients
@@ -130,34 +115,7 @@ function broadcastStartGame() {
     clients.forEach(client => {
         client.write(`data: ${startGameMessage}\n\n`);
     });
-    console.log("All clients loaded, game is starting");
-}
-
-// Function to assign prompts and broadcast to all clients
-function assignPrompts() {
-    if (users.length === 0) return;
-
-    const randomIndex = Math.floor(Math.random() * users.length);
-    const differentPromptUser = users[randomIndex].displayName;
-    const commonPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-    let differentPrompt;
-
-    do {
-        differentPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-    } while (differentPrompt === commonPrompt);
-
-    const promptAssignment = {
-        type: 'promptAssignment',
-        commonPrompt,
-        differentPromptUser,
-        differentPrompt,
-    };
-
-    clients.forEach(client => {
-        client.write(`data: ${JSON.stringify(promptAssignment)}\n\n`);
-    });
-
-    console.log("Prompts assigned and broadcasted");
+    console.log("All clients ready, starting game..");
 }
 
 // Create HTTP server
