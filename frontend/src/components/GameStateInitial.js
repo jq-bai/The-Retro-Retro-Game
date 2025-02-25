@@ -4,6 +4,7 @@ const GameStateInitial = ({ userList, displayName }) => {
     const eventSourceRef = useRef(null);
     const [board, setBoard] = useState([]);
     const [revealedCells, setRevealedCells] = useState([]);
+    const [currentPlayer, setCurrentPlayer] = useState(null);
 
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
@@ -20,6 +21,9 @@ const GameStateInitial = ({ userList, displayName }) => {
                     console.log("Board update received:", data.board, data.revealedCells); // Log the board update
                     setBoard(data.board);
                     setRevealedCells(data.revealedCells);
+                } else if (data.type === 'currentPlayer') {
+                    console.log("Current player update received:", data.displayName); // Log the current player update
+                    setCurrentPlayer(data.displayName);
                 }
                 // Handle other event types if needed
             };
@@ -52,10 +56,19 @@ const GameStateInitial = ({ userList, displayName }) => {
                 setRevealedCells(Array.from({ length: data.board.length }, () => Array(data.board[0].length).fill(false)));
             })
             .catch(error => console.error("Error fetching initial board:", error));
+
+        // Fetch the initial player from the server
+        fetch("/initial-player")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched initial player:", data.displayName);
+                setCurrentPlayer(data.displayName);
+            })
+            .catch(error => console.error("Error fetching initial player:", error));
     }, []);
 
     const handleCellClick = (rowIndex, colIndex) => {
-        if (revealedCells[rowIndex][colIndex]) return; // Prevent clicking on the same cell more than once
+        if (revealedCells[rowIndex][colIndex] || currentPlayer !== displayName) return; // Prevent clicking on the same cell more than once or if it's not the player's turn
 
         const newRevealedCells = revealedCells.map((row, rIdx) => 
             row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? true : cell))
@@ -70,7 +83,7 @@ const GameStateInitial = ({ userList, displayName }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ board, revealedCells: newRevealedCells }),
+            body: JSON.stringify({ board, revealedCells: newRevealedCells, displayName }),
         }).catch(error => console.error("Error updating board:", error));
     };
 

@@ -97,15 +97,26 @@ app.get("/events", (req, res) => {
 
 // Endpoint to handle board updates
 app.post("/update-board", (req, res) => {
-    const { board, revealedCells } = req.body;
-    console.log("Received board update request:", board, revealedCells); // Log the board update request
-    if (!board || !revealedCells) {
-        return res.status(400).json({ error: "Board state and revealed cells are required" });
+    const { board, revealedCells, displayName } = req.body;
+    console.log("Received board update request:", board, revealedCells, displayName); // Log the board update request
+    if (!board || !revealedCells || !displayName) {
+        return res.status(400).json({ error: "Board state, revealed cells, and display name are required" });
+    }
+
+    // Check if it's the current player's turn
+    const currentPlayer = users[currentPlayerIndex];
+    if (currentPlayer.displayName !== displayName) {
+        return res.status(403).json({ error: "It's not your turn" });
     }
 
     // Broadcast the updated board state to all connected clients
     console.log("Calling broadcastBoardUpdate with board:", board, revealedCells); // Log before calling the function
     broadcastBoardUpdate(board, revealedCells);
+
+    // Rotate to the next player
+    currentPlayerIndex = (currentPlayerIndex + 1) % users.length;
+    broadcastCurrentPlayer();
+
     res.json({ message: "Board updated" });
 });
 
@@ -119,14 +130,17 @@ function broadcastUserList() {
 
 // Function to broadcast start game message to all connected clients
 let currentBoard = null; // Variable to store the generated board
+let currentPlayerIndex = 0; // Variable to track the current player's turn
 
 function broadcastStartGame() {
     currentBoard = generateMinesweeperBoard(); // Generate and store the board
+    currentPlayerIndex = Math.floor(Math.random() * users.length); // Pick a random client to start first
     const startGameMessage = JSON.stringify({ type: 'startGame' });
     clients.forEach(client => {
         client.write(`data: ${startGameMessage}\n\n`);
     });
     console.log("All clients ready, starting game with board generated.");
+    broadcastCurrentPlayer();
 }
 
 // Function to broadcast board updates to all connected clients
@@ -140,6 +154,16 @@ function broadcastBoardUpdate(board, revealedCells) {
         }
     });
     console.log("Board state updated and broadcasted to all clients:", board);
+}
+
+// Function to broadcast the current player's turn to all connected clients
+function broadcastCurrentPlayer() {
+    const currentPlayer = users[currentPlayerIndex];
+    const currentPlayerMessage = JSON.stringify({ type: 'currentPlayer', displayName: currentPlayer.displayName });
+    clients.forEach(client => {
+        client.write(`data: ${currentPlayerMessage}\n\n`);
+    });
+    console.log(`Current player is: ${currentPlayer.displayName}`);
 }
 
 // Create HTTP server
@@ -224,4 +248,10 @@ app.get("/generate-board", (req, res) => {
     }
     console.log("Returning generated Minesweeper board:", currentBoard);
     res.json({ board: currentBoard });
+});
+
+// Endpoint to get the initial player
+app.get("/initial-player", (req, res) => {
+    const currentPlayer = users[currentPlayerIndex];
+    res.json({ displayName: currentPlayer.displayName });
 });
