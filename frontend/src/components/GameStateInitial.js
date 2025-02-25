@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const GameStateInitial = ({ userList, displayName }) => {
     const eventSourceRef = useRef(null);
-    const [board, setBoard] = useState(generateBoard(10, 10)); // 10x10 board
+    const [board, setBoard] = useState([]);
 
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
@@ -39,6 +39,17 @@ const GameStateInitial = ({ userList, displayName }) => {
     useEffect(() => {
         console.log("All clients loaded");
     }, [userList]);
+
+    useEffect(() => {
+        // Fetch the initial board from the server
+        fetch("/generate-board")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched initial board:", data.board);
+                setBoard(data.board);
+            })
+            .catch(error => console.error("Error fetching initial board:", error));
+    }, []);
 
     const handleCellClick = (rowIndex, colIndex) => {
         const newBoard = board.map((row, rIdx) => 
