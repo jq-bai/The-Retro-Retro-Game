@@ -95,12 +95,6 @@ app.get("/events", (req, res) => {
     });
 });
 
-// Endpoint to notify the server that the GameStateInitial component has loaded
-app.post("/game-state-initial-loaded", (req, res) => {
-    console.log("GameStateInitial component has loaded");
-    res.json({ message: "Game loaded" });
-});
-
 // Endpoint to handle board updates
 app.post("/update-board", (req, res) => {
     const { board } = req.body;

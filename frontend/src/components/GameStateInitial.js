@@ -34,18 +34,6 @@ const GameStateInitial = ({ userList, displayName }) => {
                 eventSourceRef.current = null;
             };
         }
-
-        // Notify the server that the GameStateInitial component has loaded
-        fetch("/game-state-initial-loaded", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ displayName }),
-        }).then(response => response.json())
-          .then(data => console.log(data.message))
-          .catch(error => console.error("Error notifying server:", error));
-
     }, [displayName]);
 
     useEffect(() => {
