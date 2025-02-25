@@ -252,4 +252,5 @@ p {
     font-family: var(--font-family-default);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
+    color: var(--color-white);
 }
