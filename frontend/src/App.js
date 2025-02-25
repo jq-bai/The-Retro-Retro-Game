@@ -66,7 +66,7 @@ function App() {
             {currentScreen === 'nameForm' && <NameFormScreen onSubmit={submitName} />}
             {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} isReady={isReady} />}
             {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />}
-            {currentScreen === 'gameState' && <GameStateInitial userList={userList} />}
+            {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} />}
         </div>
     );
 }

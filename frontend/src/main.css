@@ -230,21 +230,6 @@ p {
     white-space: nowrap; /* Prevent text from wrapping */
 }
 
-.prompt-card {
-    background-color: transparent;
-    border-color: var(--color-white);
-    border-style: solid;
-    border-width: var(--border-width-medium);
-    border-radius: var(--border-radius-medium);
-    padding: var(--spacing-large);
-    text-align: center;
-    font-family: var(--font-family-default);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-white);
-    width: auto;
-}
-
 .board {
     display: flex;
     flex-direction: column;
@@ -264,4 +249,7 @@ p {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
 }

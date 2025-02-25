@@ -101,6 +101,20 @@ app.post("/game-state-initial-loaded", (req, res) => {
     res.json({ message: "Game loaded" });
 });
 
+// Endpoint to handle board updates
+app.post("/update-board", (req, res) => {
+    const { board } = req.body;
+    console.log("Received board update request:", board); // Log the board update request
+    if (!board) {
+        return res.status(400).json({ error: "Board state is required" });
+    }
+
+    // Broadcast the updated board state to all connected clients
+    console.log("Calling broadcastBoardUpdate with board:", board); // Log before calling the function
+    broadcastBoardUpdate(board);
+    res.json({ message: "Board updated" });
+});
+
 // Function to broadcast messages to all connected clients
 function broadcastUserList() {
     const userList = JSON.stringify({ type: 'userList', users: users.map(({ res, ...user }) => user) });
@@ -116,6 +130,19 @@ function broadcastStartGame() {
         client.write(`data: ${startGameMessage}\n\n`);
     });
     console.log("All clients ready, starting game..");
+}
+
+// Function to broadcast board updates to all connected clients
+function broadcastBoardUpdate(board) {
+    const boardUpdateMessage = JSON.stringify({ type: 'boardUpdate', board });
+    clients.forEach(client => {
+        client.write(`data: ${boardUpdateMessage}\n\n`);
+        const user = users.find(user => user.res === client);
+        if (user) {
+            console.log(`Board update sent to client: ${user.displayName}`);
+        }
+    });
+    console.log("Board state updated and broadcasted to all clients:", board);
 }
 
 // Create HTTP server

@@ -5,14 +5,20 @@ const GameStateInitial = ({ userList, displayName }) => {
     const [board, setBoard] = useState(generateBoard(10, 10)); // 10x10 board
 
     useEffect(() => {
-        console.log("Game has started");
+        console.log("useEffect triggered with displayName:", displayName);
 
         if (!eventSourceRef.current && displayName) {
+            console.log("Creating new EventSource for displayName:", displayName);
             const eventSource = new EventSource(`/events?displayName=${displayName}`);
             eventSourceRef.current = eventSource;
 
             eventSource.onmessage = (event) => {
+                console.log("Event received:", event.data); // Log any event received
                 const data = JSON.parse(event.data);
+                if (data.type === 'boardUpdate') {
+                    console.log("Board update received:", data.board); // Log the board update
+                    setBoard(data.board);
+                }
                 // Handle other event types if needed
             };
 
@@ -23,6 +29,7 @@ const GameStateInitial = ({ userList, displayName }) => {
             };
 
             return () => {
+                console.log("Closing EventSource");
                 eventSource.close();
                 eventSourceRef.current = null;
             };
@@ -50,6 +57,17 @@ const GameStateInitial = ({ userList, displayName }) => {
             row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? 'X' : cell))
         );
         setBoard(newBoard);
+
+        console.log("Sending updated board state to server:", newBoard); // Log the updated board state
+
+        // Send the updated board state to the server
+        fetch("/update-board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ board: newBoard }),
+        }).catch(error => console.error("Error updating board:", error));
     };
 
     return (
