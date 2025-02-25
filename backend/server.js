@@ -97,15 +97,15 @@ app.get("/events", (req, res) => {
 
 // Endpoint to handle board updates
 app.post("/update-board", (req, res) => {
-    const { board } = req.body;
-    console.log("Received board update request:", board); // Log the board update request
-    if (!board) {
-        return res.status(400).json({ error: "Board state is required" });
+    const { board, revealedCells } = req.body;
+    console.log("Received board update request:", board, revealedCells); // Log the board update request
+    if (!board || !revealedCells) {
+        return res.status(400).json({ error: "Board state and revealed cells are required" });
     }
 
     // Broadcast the updated board state to all connected clients
-    console.log("Calling broadcastBoardUpdate with board:", board); // Log before calling the function
-    broadcastBoardUpdate(board);
+    console.log("Calling broadcastBoardUpdate with board:", board, revealedCells); // Log before calling the function
+    broadcastBoardUpdate(board, revealedCells);
     res.json({ message: "Board updated" });
 });
 
@@ -130,8 +130,8 @@ function broadcastStartGame() {
 }
 
 // Function to broadcast board updates to all connected clients
-function broadcastBoardUpdate(board) {
-    const boardUpdateMessage = JSON.stringify({ type: 'boardUpdate', board });
+function broadcastBoardUpdate(board, revealedCells) {
+    const boardUpdateMessage = JSON.stringify({ type: 'boardUpdate', board, revealedCells });
     clients.forEach(client => {
         client.write(`data: ${boardUpdateMessage}\n\n`);
         const user = users.find(user => user.res === client);

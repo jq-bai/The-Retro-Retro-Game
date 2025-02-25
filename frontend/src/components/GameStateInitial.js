@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 const GameStateInitial = ({ userList, displayName }) => {
     const eventSourceRef = useRef(null);
     const [board, setBoard] = useState([]);
+    const [revealedCells, setRevealedCells] = useState([]);
 
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
@@ -16,8 +17,9 @@ const GameStateInitial = ({ userList, displayName }) => {
                 console.log("Event received:", event.data); // Log any event received
                 const data = JSON.parse(event.data);
                 if (data.type === 'boardUpdate') {
-                    console.log("Board update received:", data.board); // Log the board update
+                    console.log("Board update received:", data.board, data.revealedCells); // Log the board update
                     setBoard(data.board);
+                    setRevealedCells(data.revealedCells);
                 }
                 // Handle other event types if needed
             };
@@ -47,17 +49,20 @@ const GameStateInitial = ({ userList, displayName }) => {
             .then(data => {
                 console.log("Fetched initial board:", data.board);
                 setBoard(data.board);
+                setRevealedCells(Array.from({ length: data.board.length }, () => Array(data.board[0].length).fill(false)));
             })
             .catch(error => console.error("Error fetching initial board:", error));
     }, []);
 
     const handleCellClick = (rowIndex, colIndex) => {
-        const newBoard = board.map((row, rIdx) => 
-            row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? 'X' : cell))
-        );
-        setBoard(newBoard);
+        if (revealedCells[rowIndex][colIndex]) return; // Prevent clicking on the same cell more than once
 
-        console.log("Sending updated board state to server:", newBoard); // Log the updated board state
+        const newRevealedCells = revealedCells.map((row, rIdx) => 
+            row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? true : cell))
+        );
+        setRevealedCells(newRevealedCells);
+
+        console.log("Sending updated board state to server:", board, newRevealedCells); // Log the updated board state
 
         // Send the updated board state to the server
         fetch("/update-board", {
@@ -65,7 +70,7 @@ const GameStateInitial = ({ userList, displayName }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ board: newBoard }),
+            body: JSON.stringify({ board, revealedCells: newRevealedCells }),
         }).catch(error => console.error("Error updating board:", error));
     };
 
@@ -90,7 +95,7 @@ const GameStateInitial = ({ userList, displayName }) => {
                                 className="board-cell" 
                                 onClick={() => handleCellClick(rowIndex, colIndex)}
                             >
-                                {cell}
+                                {revealedCells[rowIndex][colIndex] ? cell : ''}
                             </div>
                         ))}
                     </div>
@@ -98,10 +103,6 @@ const GameStateInitial = ({ userList, displayName }) => {
             </div>
         </div>
     );
-};
-
-const generateBoard = (rows, cols) => {
-    return Array.from({ length: rows }, () => Array.from({ length: cols }, () => ''));
 };
 
 export default GameStateInitial;
