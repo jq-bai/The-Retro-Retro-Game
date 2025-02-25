@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const GameStateInitial = ({ userList, displayName }) => {
-    const eventSourceRef = useRef(null);
+const GameStateInitial = ({ userList, displayName, eventSource }) => {
     const [board, setBoard] = useState([]);
     const [revealedCells, setRevealedCells] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState(null);
@@ -9,11 +8,7 @@ const GameStateInitial = ({ userList, displayName }) => {
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
 
-        if (!eventSourceRef.current && displayName) {
-            console.log("Creating new EventSource for displayName:", displayName);
-            const eventSource = new EventSource(`/events?displayName=${displayName}`);
-            eventSourceRef.current = eventSource;
-
+        if (eventSource) {
             eventSource.onmessage = (event) => {
                 console.log("Event received:", event.data); // Log any event received
                 const data = JSON.parse(event.data);
@@ -31,16 +26,9 @@ const GameStateInitial = ({ userList, displayName }) => {
             eventSource.onerror = (error) => {
                 console.error("EventSource failed:", error);
                 eventSource.close();
-                eventSourceRef.current = null;
-            };
-
-            return () => {
-                console.log("Closing EventSource");
-                eventSource.close();
-                eventSourceRef.current = null;
             };
         }
-    }, [displayName]);
+    }, [displayName, eventSource]);
 
     useEffect(() => {
         console.log("All clients loaded");
@@ -93,7 +81,7 @@ const GameStateInitial = ({ userList, displayName }) => {
                 {userList.filter(user => user.displayName).map(user => (
                     <div key={user.displayName} className="user-card-container">
                         <div className="user-card">
-                            {user.displayName}
+                            {user.displayName} {user.displayName === displayName && "(You)"}
                         </div>
                     </div>
                 ))}
