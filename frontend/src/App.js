@@ -42,7 +42,7 @@ function App() {
                 setPlayerName(name);
                 setUserList(response.data.users);
                 setCurrentScreen('holding');
-                console.log('Submitting Name:', name);
+                console.log('Submitting name:', name);
 
                 // Sets up an SSE connection between the server and the current client
                 if (!eventSourceRef.current) {
@@ -89,7 +89,7 @@ function App() {
         axios.post('/set-ready', { displayName: playerName })
             .then(response => {
                 setIsReady(prevIsReady => !prevIsReady);
-                console.log('Setting Ready:', !isReady);
+                console.log('Setting ready:', !isReady);
             })
 
             // Error handling for setting the ready status

@@ -5,6 +5,7 @@
 import React from 'react'; // Imports the React library
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'; // Imports the DotLottieReact component from the DotLottieReact library
 
+// GameStateEnd component with a winner and onReturnToTitle prop
 const GameStateEnd = ({ winner, onReturnToTitle }) => {
     // Renders JSX visual elements
     return (

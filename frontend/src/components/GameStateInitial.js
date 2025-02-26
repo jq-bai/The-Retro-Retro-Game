@@ -1,37 +1,39 @@
-import React, { useState, useEffect } from 'react';
+/*
+    This is the main game state
+*/
 
+import React, { useState, useEffect } from 'react'; // Imports the useState and useEffect hooks from React
+
+// GameStateInitial component with userList, displayName, eventSource, setCurrentScreen, and setWinner prop
 const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen, setWinner }) => {
     const [board, setBoard] = useState([]);
     const [revealedCells, setRevealedCells] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [scores, setScores] = useState({});
     
+    // useEffect hook to handle the EventSource connection
     useEffect(() => {
-        console.log("useEffect triggered with displayName:", displayName);
-
         if (eventSource) {
             eventSource.onmessage = (event) => {
-                console.log("Event received:", event.data); // Log any event received
                 const data = JSON.parse(event.data);
+
+                // Handling different types of events from the server
                 if (data.type === 'boardUpdate') {
-                    console.log("Board update received:", data.board, data.revealedCells, data.scores); // Log the board update
+                    console.log("Board update received:", data.board, data.revealedCells, data.scores);
                     setBoard(data.board);
                     setRevealedCells(data.revealedCells);
                     setScores(data.scores);
                 } else if (data.type === 'currentPlayer') {
-                    console.log("Current player update received:", data.displayName); // Log the current player update
+                    console.log("Current player update received:", data.displayName);
                     setCurrentPlayer(data.displayName);
-                } else if (data.type === 'scoreUpdate') {
-                    console.log("Score update received:", data.scores); // Log the score update
-                    setScores(data.scores);
                 } else if (data.type === 'gameEnd') {
-                    console.log("Game end received:", data.winner); // Log the game end event
-                    setWinner(data.winner); // Set the winner
-                    setCurrentScreen('gameStateEnd'); // Transition to GameStateEnd screen
+                    console.log("Game end received:", data.winner);
+                    setWinner(data.winner);
+                    setCurrentScreen('gameStateEnd');
                 }
-                // Handle other event types if needed
             };
 
+            // Error handling for the EventSource connection
             eventSource.onerror = (error) => {
                 console.error("EventSource failed:", error);
                 eventSource.close();
@@ -39,10 +41,10 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         }
     }, [displayName, eventSource, setCurrentScreen, setWinner]);
 
-    useEffect(() => {
-        console.log("All clients loaded");
-    }, [userList]);
+    // useEffect hook to handle the userList
+    useEffect(() => {}, [userList]);
 
+    // useEffect hook to fetch the initial board, player, and scores from the server
     useEffect(() => {
         // Fetch the initial board from the server
         fetch("/generate-board")
@@ -73,6 +75,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
             .catch(error => console.error("Error fetching initial scores:", error));
     }, []);
 
+    // Function to handle cell clicks
     const handleCellClick = (rowIndex, colIndex) => {
         if (revealedCells[rowIndex][colIndex] || currentPlayer !== displayName) return; // Prevent clicking on the same cell more than once or if it's not the player's turn
 
@@ -81,12 +84,10 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         );
         setRevealedCells(newRevealedCells);
 
-        const isMine = board[rowIndex][colIndex] === '💣'; // Assuming '💣' represents a mine
+        const isMine = board[rowIndex][colIndex] === '💣';
         const scoreChange = isMine ? -1 : 1;
         const newScores = { ...scores, [displayName]: (scores[displayName] || 0) + scoreChange };
         setScores(newScores);
-
-        console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores); // Log the updated board state and scores
 
         // Send the updated board state and scores to the server
         fetch("/update-board", {
@@ -106,22 +107,17 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
             console.log("Server response:", data);
         })
         .catch(error => console.error("Error updating board:", error));
+        console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores);
     };
 
+    // DEV FUNCTION
     const revealAllCells = () => {
         const newRevealedCells = revealedCells.map(row => row.map(() => true));
         setRevealedCells(newRevealedCells);
-
         console.log("All cells revealed for testing purposes");
-
-        // Ensure newScores is defined
         const newScores = { ...scores };
-
-        // Log the data being sent to the server
         const dataToSend = { board, revealedCells: newRevealedCells, scores: newScores, displayName };
         console.log("Sending data to server:", dataToSend);
-
-        // Send the updated board state and scores to the server
         fetch("/update-board", {
             method: "POST",
             headers: {
@@ -131,6 +127,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         }).catch(error => console.error("Error updating board:", error));
     };
 
+    // Renders JSX visual elements
     return (
         <div className="hero center">
             <div className="user-grid">
@@ -160,7 +157,8 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                 ))}
             </div>
             <br />
-            <button onClick={revealAllCells}>Reveal All Cells</button> {/* Button to reveal all cells */}
+            {/* DEV BUTTON */}
+            <button onClick={revealAllCells}>Reveal All Cells</button>
         </div>
     );
 };
