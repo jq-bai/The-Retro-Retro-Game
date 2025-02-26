@@ -95,6 +95,39 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ board, revealedCells: newRevealedCells, scores: newScores, displayName }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Server response:", data);
+        })
+        .catch(error => console.error("Error updating board:", error));
+    };
+
+    const revealAllCells = () => {
+        const newRevealedCells = revealedCells.map(row => row.map(() => true));
+        setRevealedCells(newRevealedCells);
+
+        console.log("All cells revealed for testing purposes");
+
+        // Ensure newScores is defined
+        const newScores = { ...scores };
+
+        // Log the data being sent to the server
+        const dataToSend = { board, revealedCells: newRevealedCells, scores: newScores, displayName };
+        console.log("Sending data to server:", dataToSend);
+
+        // Send the updated board state and scores to the server
+        fetch("/update-board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
         }).catch(error => console.error("Error updating board:", error));
     };
 
@@ -126,6 +159,8 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                     </div>
                 ))}
             </div>
+            <br />
+            <button onClick={revealAllCells}>Reveal All Cells</button> {/* Button to reveal all cells */}
         </div>
     );
 };

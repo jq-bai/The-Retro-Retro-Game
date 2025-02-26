@@ -294,3 +294,22 @@ app.get("/initial-player", (req, res) => {
 app.get("/initial-scores", (req, res) => {
     res.json({ scores });
 });
+
+// Endpoint to clear all data and clients
+app.post('/clear-data', (req, res) => {
+    users = [];
+    scores = {};
+    currentBoard = null;
+    currentPlayerIndex = 0; // Reset the current player index
+    clients.forEach(client => client.end());
+    clients = [];
+    console.log("All data cleared and server reset.");
+
+    // Notify all clients about the reset state
+    clients.forEach(client => {
+        client.write('event: reset\n');
+        client.write('data: {}\n\n');
+    });
+
+    res.json({ message: 'All data cleared and server reset' });
+});

@@ -41,6 +41,8 @@ function App() {
                         } else if (data.type === 'gameEnd') {
                             setWinner(data.winner); // Set the winner
                             setCurrentScreen('gameStateEnd'); // Transition to GameStateEnd screen
+                        } else if (data.type === 'reset') {
+                            handleReturnToTitle(); // Handle reset state
                         }
                     };
                     newEventSource.onerror = (error) => {
@@ -66,6 +68,28 @@ function App() {
             });
     };
 
+    const handleReturnToTitle = () => {
+        axios.post('/clear-data')
+            .then(response => {
+                console.log('Server response:', response.data); // Log the server response
+                setPlayerName('');
+                setIsReady(false);
+                setUserList([]);
+                setScores({});
+                setWinner(null);
+                setCurrentScreen('welcome');
+
+                // Close the EventSource connection
+                if (eventSourceRef.current) {
+                    eventSourceRef.current.close();
+                    eventSourceRef.current = null;
+                }
+            })
+            .catch(error => {
+                console.error('Error returning to title screen:', error);
+            });
+    };
+
     useEffect(() => {
         // Clean up the EventSource connection when the component unmounts
         return () => {
@@ -82,7 +106,7 @@ function App() {
             {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} isReady={isReady} />}
             {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />}
             {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} eventSource={eventSourceRef.current} setCurrentScreen={setCurrentScreen} setWinner={setWinner} />}
-            {currentScreen === 'gameStateEnd' && <GameStateEnd scores={scores} winner={winner} />} {/* Add the winner prop */}
+            {currentScreen === 'gameStateEnd' && <GameStateEnd winner={winner} onReturnToTitle={handleReturnToTitle} />} {/* Add the winner prop and handlers */}
         </div>
     );
 }

@@ -1,18 +1,13 @@
 import React from 'react';
 
-const GameStateEnd = ({ scores, winner }) => {
+const GameStateEnd = ({ winner, onReturnToTitle }) => {
+
     return (
-        <div>
+        <div className="hero center">
             <h2>Game Over</h2>
-            <h3>Winner: {winner}</h3> {/* Display the winner */}
-            <div>
-                <h3>Scores:</h3>
-                <ul>
-                    {Object.entries(scores).map(([player, score]) => (
-                        <li key={player}>{player}: {score}</li>
-                    ))}
-                </ul>
-            </div>
+            <h3>The winner is {winner}</h3> {/* Display the winner */}
+            <br />
+            <button className="cta" onClick={onReturnToTitle}>Return to Title Screen</button> {/* Return to Title Screen button */}
         </div>
     );
 };
