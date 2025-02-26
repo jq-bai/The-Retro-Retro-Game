@@ -5,6 +5,7 @@ import NameFormScreen from './components/NameFormScreen';
 import HoldingScreen from './components/HoldingScreen';
 import StartingScreen from './components/StartingScreen';
 import GameStateInitial from './components/GameStateInitial';
+import GameStateEnd from './components/GameStateEnd'; // Import the GameStateEnd component
 
 function App() {
     const [currentScreen, setCurrentScreen] = useState('welcome');
@@ -12,6 +13,7 @@ function App() {
     const [isReady, setIsReady] = useState(false);
     const [userList, setUserList] = useState([]);
     const [scores, setScores] = useState({});
+    const [winner, setWinner] = useState(null); // Add state for winner
     const eventSourceRef = useRef(null);
 
     const joinGame = () => {
@@ -36,6 +38,9 @@ function App() {
                             setCurrentScreen('starting');
                         } else if (data.type === 'scoreUpdate') {
                             setScores(data.scores);
+                        } else if (data.type === 'gameEnd') {
+                            setWinner(data.winner); // Set the winner
+                            setCurrentScreen('gameStateEnd'); // Transition to GameStateEnd screen
                         }
                     };
                     newEventSource.onerror = (error) => {
@@ -76,7 +81,8 @@ function App() {
             {currentScreen === 'nameForm' && <NameFormScreen onSubmit={submitName} />}
             {currentScreen === 'holding' && <HoldingScreen message="Waiting for players..." userList={userList} onReady={setReady} isReady={isReady} />}
             {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />}
-            {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} eventSource={eventSourceRef.current} />}
+            {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} eventSource={eventSourceRef.current} setCurrentScreen={setCurrentScreen} setWinner={setWinner} />}
+            {currentScreen === 'gameStateEnd' && <GameStateEnd scores={scores} winner={winner} />} {/* Add the winner prop */}
         </div>
     );
 }

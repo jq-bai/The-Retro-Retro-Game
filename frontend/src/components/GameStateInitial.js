@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const GameStateInitial = ({ userList, displayName, eventSource }) => {
+const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen, setWinner }) => {
     const [board, setBoard] = useState([]);
     const [revealedCells, setRevealedCells] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [scores, setScores] = useState({});
-
+    
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
 
@@ -24,6 +24,10 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                 } else if (data.type === 'scoreUpdate') {
                     console.log("Score update received:", data.scores); // Log the score update
                     setScores(data.scores);
+                } else if (data.type === 'gameEnd') {
+                    console.log("Game end received:", data.winner); // Log the game end event
+                    setWinner(data.winner); // Set the winner
+                    setCurrentScreen('gameStateEnd'); // Transition to GameStateEnd screen
                 }
                 // Handle other event types if needed
             };
@@ -33,7 +37,7 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                 eventSource.close();
             };
         }
-    }, [displayName, eventSource]);
+    }, [displayName, eventSource, setCurrentScreen, setWinner]);
 
     useEffect(() => {
         console.log("All clients loaded");

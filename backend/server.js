@@ -162,6 +162,13 @@ function broadcastBoardUpdate(board, revealedCells, scores) {
         }
     });
     console.log("Board state updated and broadcasted to all clients:", board);
+
+    // Check if all cells are revealed
+    const allCellsRevealed = revealedCells.every(row => row.every(cell => cell));
+    if (allCellsRevealed) {
+        console.log("All cells revealed, broadcasting game end event");
+        broadcastGameEnd();
+    }
 }
 
 // Function to broadcast the current player's turn to all connected clients
@@ -172,6 +179,25 @@ function broadcastCurrentPlayer() {
         client.write(`data: ${currentPlayerMessage}\n\n`);
     });
     console.log(`Current player is: ${currentPlayer.displayName}`);
+}
+
+// Function to broadcast game end event to all connected clients
+function broadcastGameEnd() {
+    // Find the user with the highest score
+    let highestScore = -Infinity;
+    let winner = null;
+    for (const [displayName, score] of Object.entries(scores)) {
+        if (score > highestScore) {
+            highestScore = score;
+            winner = displayName;
+        }
+    }
+
+    const gameEndMessage = JSON.stringify({ type: 'gameEnd', winner });
+    clients.forEach(client => {
+        client.write(`data: ${gameEndMessage}\n\n`);
+    });
+    console.log(`Game end event broadcasted to all clients. Winner: ${winner}`);
 }
 
 // Create HTTP server
