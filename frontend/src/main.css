@@ -252,6 +252,7 @@ caption {
 }
 
 .user-card.current-player {
+    border-color: var(--color-green);
     background-color: var(--color-green);
     color: var(--color-black)
 }
