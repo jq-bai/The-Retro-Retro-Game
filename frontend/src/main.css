@@ -14,6 +14,10 @@
     --color-green: #00FF00;
     --color-red: #FF0000;
     /* Sizes */
+    --size-xlarge4: 40em;
+    --size-xlarge3: 20em;
+    --size-xlarge2: 10em;
+    --size-xlarge: 5em;
     --size-large: 3em;
     --size-medium: 2em;
     --size-small: 1em;
@@ -43,6 +47,8 @@
     --font-weight-regular: 500;
     --font-weight-light: 300;
     /* Spacing */
+    --spacing-xlarge4: 16em;
+    --spacing-xlarge3: 8em;
     --spacing-xlarge2: 4em;
     --spacing-xlarge: 3em;
     --spacing-large: 2em;
@@ -147,8 +153,8 @@ p {
     font-family: var(--font-family-default);
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
-    max-width: 100%;
-    max-height: var(--size-large);
+    width: 100%;
+    height: var(--size-large);
     transition: background-color 400ms, color 400ms;
 }
 
@@ -162,13 +168,12 @@ p {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    width: 100%;
+    height: max-content;
+    min-width: 100%;
+    max-width: var(--size-xlarge4);
     padding: var(--spacing-xlarge2);
     background-color: var(--color-black);
     border-radius: var(--border-radius-xlarge);
-    width: max-content;
-    min-width: 100%;
 }
 
 .bodyCenter {
@@ -176,6 +181,7 @@ p {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: var(--spacing-xlarge3);
     height: 100vh;
     width: 100%;
 }
@@ -195,6 +201,10 @@ p {
     padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-small) var(--spacing-medium);
 }
 
+.form-container {
+    width: 100%;
+}
+
 .user-grid {
     display: flex;
     flex-wrap: wrap;
@@ -209,7 +219,7 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1 1 calc(20% - var(--spacing-medium)); /* Set the width to fill up remaining space, up to 5 containers per row */
+    flex: 1 1 calc(20% - var(--spacing-medium));
     box-sizing: border-box;
 }
 

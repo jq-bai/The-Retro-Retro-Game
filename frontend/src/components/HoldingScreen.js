@@ -1,20 +1,34 @@
-import React from 'react';
+/*
+    This holds all currently connected clients and allow them get ready for the game
+*/
 
-const HoldingScreen = ({ message, userList = [], onReady, isReady }) => {
+import React from 'react'; // Imports the React library
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'; // Imports the DotLottieReact component from the DotLottieReact library
+
+// HoldingScreen component with a userList, onReady, and isReady prop
+const HoldingScreen = ({ userList = [], onReady, isReady }) => {
+    // Renders JSX visual elements
     return (
         <div className="hero center">
-            <img 
-                src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGZtbGc3OWI2Y21sYWU1bWU2d3B4M3plbGp6MXZwY293cGx1cnUzaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZR8teuiCs3AkSkzjnG/giphy.gif" 
-                alt="Computer man" 
-                style={{ maxWidth: 'auto', maxHeight: 'auto' }} 
+            <DotLottieReact
+                src="https://lottie.host/be15b006-9c70-427a-b438-2ff303d51a7f/Osti3Ta6ZB.lottie"
+                loop
+                autoplay
+                style={{ width: 'var(--size-xlarge2)', height: 'var(--size-xlarge2)' }}
             />
             <br />
             <br />
-            <h2>{message}</h2>
+            <h2>Game Lobby</h2>
             <br />
+            <h3 style={{ width: '100%', overflowWrap: 'normal', whiteSpace: 'normal' }}>
+                The game will start when there are at least 2 players and everyone is ready
+            </h3>
+            <br />
+            {/* Calls the onReady function */}
             <button className="cta" onClick={onReady}>
-                {isReady ? "Wait No I'm Not" : "I'm Ready"}
+                {isReady ? "Wait No I'm Not I'm Not" : "I'm Ready"}
             </button>
+            <br />
             <br />
             <br />
             <div className="listBox">

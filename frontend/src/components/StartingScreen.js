@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react';
+/*
+    This initiates the countdown to start the game once all clients are ready
+*/
 
+import React, { useState, useEffect } from 'react'; // Imports the useState and useEffect hooks from React
+
+// StartingScreen component with a userList and onCountdownComplete prop
 const StartingScreen = ({ userList, onCountdownComplete }) => {
-    const [countdown, setCountdown] = useState(5);
+    const [countdown, setCountdown] = useState(5); // State variable to track the countdown
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -17,9 +22,10 @@ const StartingScreen = ({ userList, onCountdownComplete }) => {
         return () => clearInterval(timer);
     }, [onCountdownComplete]);
 
+    // Renders JSX visual elements
     return (
         <div className="hero center">
-            <h2 id="message">Game is Starting in {countdown} seconds!</h2>
+            <h2 id="message">Game is Starting in {countdown} Seconds</h2>
             <br />
             <div className="listBox">
                 <h3>Players in the Game</h3>

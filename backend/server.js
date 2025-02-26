@@ -33,6 +33,17 @@ app.get("/api/users", (req, res) => {
     res.json(users.map(({ res, ...user }) => user));
 });
 
+// API endpoint to check if a display name already exists
+app.post("/check-name", (req, res) => {
+    const displayName = req.body.displayName;
+    if (!displayName) {
+        return res.status(400).json({ error: "Display name is required" });
+    }
+
+    const nameExists = users.some(user => user.displayName === displayName);
+    res.json({ exists: nameExists });
+});
+
 // Handle submitName POST request
 app.post("/submit-name", (req, res) => {
     const displayName = req.body.displayName;
@@ -42,6 +53,11 @@ app.post("/submit-name", (req, res) => {
 
     if (users.length >= maxUsers) {
         return res.status(403).json({ error: "Server is full. Please try again later." });
+    }
+
+    const nameExists = users.some(user => user.displayName === displayName);
+    if (nameExists) {
+        return res.status(400).json({ error: "Display name already exists" });
     }
 
     const user = { displayName, ready: false, res: null };
