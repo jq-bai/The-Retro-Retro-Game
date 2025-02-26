@@ -56,7 +56,7 @@
     --spacing-small: 0.5em;
 }
 
-/*Styles/
+/* Styles */
 /* Global styles */
 body {
     background-color: var(--color-grey2);
@@ -104,6 +104,13 @@ p {
     font-family: Monaco;
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
+    color: var(--color-white);
+}
+
+caption {
+    font-family: Monaco;
+    font-size: var(--font-size-xsmall);
+    font-weight: var(--font-weight-medium);
     color: var(--color-white);
 }
 
@@ -209,9 +216,9 @@ p {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--spacing-medium);
-    padding: var(--spacing-medium);
-    width: 100%;
+    gap: var(--spacing-small);
+    min-width: 100%;
+    max-width: var(--size-xlarge4);
     margin: 0 auto;
 }
 
@@ -219,7 +226,8 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1 1 calc(20% - var(--spacing-medium));
+    flex: 1 1 calc(25% - var(--spacing-small));
+    max-width: calc(25% - var(--spacing-small));
     box-sizing: border-box;
 }
 
@@ -235,11 +243,12 @@ p {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
     color: var(--color-white);
-    width: 100%; /* Ensure the card takes up the full width of the container */
+    min-width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    overflow: hidden; /* Hide overflow content */
-    text-overflow: ellipsis; /* Add ellipsis (...) for overflow text */
-    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .user-card.current-player {
@@ -259,16 +268,16 @@ p {
 }
 
 .board-cell {
-    width: 30px;
-    height: 30px;
-    border: 1px solid var(--color-grey);
+    width: var(--size-large);
+    height: var(--size-large);
+    border: var(--border-width-small) solid var(--color-grey);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-family: var(--font-family-default);
     font-size: var(--font-size-small);
-    font-weight: var(--font-weight-regular);
+    font-weight: var(--font-weight-medium);
     color: var(--color-white);
 }
 

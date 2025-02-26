@@ -135,11 +135,12 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                     <div key={user.displayName} className="user-card-container">
                         <div className={`user-card ${user.displayName === currentPlayer ? 'current-player' : ''}`}>
                             {user.displayName === displayName ? "You" : user.displayName}
-                            <div>Score: {scores[user.displayName] || 0}</div>
+                            <div> Score:{scores[user.displayName] || 0}</div>
                         </div>
                     </div>
                 ))}
             </div>
+            <br />
             <br />
             <div className="board">
                 {board.map((row, rowIndex) => (
