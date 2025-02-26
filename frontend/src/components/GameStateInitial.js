@@ -77,7 +77,7 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
         );
         setRevealedCells(newRevealedCells);
 
-        const isMine = board[rowIndex][colIndex] === 'M'; // Assuming 'M' represents a mine
+        const isMine = board[rowIndex][colIndex] === '💣'; // Assuming '💣' represents a mine
         const scoreChange = isMine ? -1 : 1;
         const newScores = { ...scores, [displayName]: (scores[displayName] || 0) + scoreChange };
         setScores(newScores);
@@ -99,8 +99,8 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
             <div className="user-grid">
                 {userList.filter(user => user.displayName).map(user => (
                     <div key={user.displayName} className="user-card-container">
-                        <div className="user-card">
-                            {user.displayName} {user.displayName === displayName && "(You)"}
+                        <div className={`user-card ${user.displayName === currentPlayer ? 'current-player' : ''}`}>
+                            {user.displayName === displayName ? "You" : user.displayName}
                             <div>Score: {scores[user.displayName] || 0}</div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                         {row.map((cell, colIndex) => (
                             <div 
                                 key={colIndex} 
-                                className="board-cell" 
+                                className={`board-cell ${revealedCells[rowIndex][colIndex] && board[rowIndex][colIndex] === '💣' ? 'mine' : ''}`} 
                                 onClick={() => handleCellClick(rowIndex, colIndex)}
                             >
                                 {revealedCells[rowIndex][colIndex] ? cell : ''}

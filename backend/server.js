@@ -217,7 +217,7 @@ function generateMinesweeperBoard() {
         const col = Math.floor(Math.random() * cols);
 
         if (board[row][col] === 0) {
-            board[row][col] = 'M';
+            board[row][col] = '💣'; // Use bomb emoji instead of 'M'
             minesPlaced++;
         }
     }
@@ -229,7 +229,7 @@ function generateMinesweeperBoard() {
             for (let j = -1; j <= 1; j++) {
                 const newRow = row + i;
                 const newCol = col + j;
-                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && board[newRow][newCol] === 'M') {
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && board[newRow][newCol] === '💣') {
                     count++;
                 }
             }
@@ -240,7 +240,7 @@ function generateMinesweeperBoard() {
     // Update each cell with the count of adjacent mines
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            if (board[row][col] !== 'M') {
+            if (board[row][col] !== '💣') {
                 board[row][col] = countMines(row, col);
             }
         }

@@ -11,6 +11,8 @@
     --color-grey: #808080;
     --color-grey2: #2C2C2C;
     --color-black: #1C1C1C;
+    --color-green: #00FF00;
+    --color-red: #FF0000;
     /* Sizes */
     --size-large: 3em;
     --size-medium: 2em;
@@ -230,6 +232,11 @@ p {
     white-space: nowrap; /* Prevent text from wrapping */
 }
 
+.user-card.current-player {
+    background-color: var(--color-green);
+    color: var(--color-black)
+}
+
 .board {
     display: flex;
     flex-direction: column;
@@ -253,4 +260,8 @@ p {
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-regular);
     color: var(--color-white);
+}
+
+.board-cell.mine {
+    background-color: var(--color-red);
 }
