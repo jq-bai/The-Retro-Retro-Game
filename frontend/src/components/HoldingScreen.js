@@ -11,7 +11,7 @@ const HoldingScreen = ({ userList = [], onReady, isReady }) => {
     return (
         <div className="hero center">
             <DotLottieReact
-                src="https://lottie.host/be15b006-9c70-427a-b438-2ff303d51a7f/Osti3Ta6ZB.lottie"
+                src="https://lottie.host/fea002b1-c791-41fe-9bd7-35b205c3fd06/nbbCkk4Bha.lottie"
                 loop
                 autoplay
                 style={{ width: 'var(--size-xlarge2)', height: 'var(--size-xlarge2)' }}

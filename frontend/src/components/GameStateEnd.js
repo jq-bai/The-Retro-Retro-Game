@@ -11,7 +11,7 @@ const GameStateEnd = ({ winner, onReturnToTitle }) => {
     return (
         <div className="hero center">
             <DotLottieReact
-                src="https://lottie.host/be15b006-9c70-427a-b438-2ff303d51a7f/Osti3Ta6ZB.lottie"
+                src="https://lottie.host/4d798cd5-db04-4cec-b0f1-63fd515ffb5f/3VJ4AE9kKa.lottie"
                 loop
                 autoplay
                 style={{ width: 'var(--size-xlarge2)', height: 'var(--size-xlarge2)' }}

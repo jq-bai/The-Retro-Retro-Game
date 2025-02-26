@@ -181,6 +181,7 @@ caption {
     padding: var(--spacing-xlarge2);
     background-color: var(--color-black);
     border-radius: var(--border-radius-xlarge);
+    transition: 400ms;
 }
 
 .bodyCenter {
@@ -205,7 +206,7 @@ caption {
     border-width: var(--border-width-xsmall);
     background-color: transparent;
     border-radius: var(--border-radius-medium);
-    padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-small) var(--spacing-medium);
+    padding: var(--spacing-medium);
 }
 
 .form-container {
@@ -249,6 +250,7 @@ caption {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: background-color 400ms, color 400ms, border-color 400ms;
 }
 
 .user-card.current-player {
