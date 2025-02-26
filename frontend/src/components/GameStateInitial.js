@@ -84,7 +84,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
 
     // Function to handle cell clicks
     const handleCellClick = (rowIndex, colIndex) => {
-        if (revealedCells[rowIndex][colIndex] || currentPlayer !== displayName) return; // Prevent clicking on the same cell more than once or if it's not the player's turn
+        if (revealedCells[rowIndex][colIndex] || currentPlayer !== displayName) return; // Prevents clicking on the same cell more than once or if it's not the player's turn
 
         const newRevealedCells = revealedCells.map((row, rIdx) => 
             row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? true : cell))
@@ -96,7 +96,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         const newScores = { ...scores, [displayName]: (scores[displayName] || 0) + scoreChange };
         setScores(newScores);
 
-        // Send the updated board state and scores to the server
+        // Sends the updated board state and scores to the server
         fetch("/update-board", {
             method: "POST",
             headers: {
@@ -116,7 +116,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         .catch(error => console.error("Error updating board:", error));
         console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores);
 
-        // Play the Lottie animation once when a cell is clicked
+        // Plays the Lottie animation once when a cell is clicked
         if (dotLottie) {
             dotLottie.play();
           }
@@ -172,7 +172,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
             <br />
             <DotLottieReact
                 src="https://lottie.host/6acb6297-3b63-47fa-90ff-a552ade44993/hSVEweDdDh.lottie"
-                loop={false} // Disable looping
+                loop={false}
                 autoplay={true}
                 dotLottieRefCallback={dotLottieRefCallback}
                 style={{ width: 'var(--size-large)', height: 'var(--size-large)' }}
