@@ -1,28 +1,31 @@
-const http = require("http");
-const path = require("path");
-const express = require("express");
-const bodyParser = require("body-parser");
+/*
+    This is the main server for the app
+*/
 
+const http = require("http"); // Imports the HTTP module for creating the server
+const path = require("path"); // Imports the Path module for working with file paths
+const express = require("express"); // Imports the Express library for creating the server
+const bodyParser = require("body-parser"); // Imports the body-parser library for parsing JSON bodies
+
+// Create an Express server
 const app = express();
-const host = "0.0.0.0"; // Bind to all available network interfaces
-const port = process.env.PORT || 8000; // Use the port provided by Render
+const host = "0.0.0.0";
+const port = process.env.PORT || 8000;
 
-// Middleware to parse JSON bodies
+// Middleware to parse JSON bodies and serve static files
 app.use(bodyParser.json());
-
-// Serve static files from the React app
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-// Store connected users
-let users = [];
-const maxUsers = 10;
+// Data storage
+let users = []; // Array to store connected users
+const maxUsers = 10;    // Maximum number of users allowed
+let clients = []; // Array to store connected clients for SSE
+let scores = {}; // Object to store user scores
+let currentBoard = null; // Variable to store the generated board
+let currentPlayerIndex = 0; // Variable to track the current player's turn
 
-// Store connected clients for SSE
-let clients = [];
 
-// Store scores
-let scores = {};
-
+// Endpoints
 // Handle requests for the main HTML file
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
@@ -62,7 +65,7 @@ app.post("/submit-name", (req, res) => {
 
     const user = { displayName, ready: false, res: null };
     users.push(user);
-    scores[displayName] = 0; // Initialize score for the new user
+    scores[displayName] = 0;
     console.log(`Received display name: ${displayName}`);
     res.json({ message: `Welcome, ${displayName}!`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
@@ -76,7 +79,7 @@ app.post("/set-ready", (req, res) => {
         return res.status(404).json({ error: "Client not found" });
     }
 
-    user.ready = !user.ready; // Toggle the ready status
+    user.ready = !user.ready;
     console.log(`Client ${displayName} is ${user.ready ? 'ready' : 'not ready'}`);
     res.json({ message: `${displayName} is ${user.ready ? 'ready' : 'not ready'}`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
@@ -110,10 +113,30 @@ app.get("/events", (req, res) => {
     req.on("close", () => {
         clients = clients.filter(client => client !== res);
         users = users.filter(user => user.res !== res);
-        delete scores[displayName]; // Remove the user's score
+        delete scores[displayName];
         console.log(`Client disconnected: ${displayName}`);
         broadcastUserList();
     });
+});
+
+// Endpoint to generate a new Minesweeper board
+app.get("/generate-board", (req, res) => {
+    if (!currentBoard) {
+        currentBoard = generateMinesweeperBoard();
+    }
+    console.log("Returning generated Minesweeper board:", currentBoard);
+    res.json({ board: currentBoard });
+});
+
+// Endpoint to get the initial player
+app.get("/initial-player", (req, res) => {
+    const currentPlayer = users[currentPlayerIndex];
+    res.json({ displayName: currentPlayer.displayName });
+});
+
+// Endpoint to get the initial scores
+app.get("/initial-scores", (req, res) => {
+    res.json({ scores });
 });
 
 // Endpoint to handle board updates
@@ -144,6 +167,25 @@ app.post("/update-board", (req, res) => {
     res.json({ message: "Board updated" });
 });
 
+// Endpoint to clear all data and clients
+app.post('/clear-data', (req, res) => {
+    users = [];
+    scores = {};
+    currentBoard = null;
+    currentPlayerIndex = 0; // Reset the current player index
+    clients.forEach(client => client.end());
+    clients = [];
+    console.log("All data cleared and server reset.");
+
+    // Notify all clients about the reset state
+    clients.forEach(client => {
+        client.write('event: reset\n');
+        client.write('data: {}\n\n');
+    });
+
+    res.json({ message: 'All data cleared and server reset' });
+});
+
 // Function to broadcast messages to all connected clients
 function broadcastUserList() {
     const userList = JSON.stringify({ type: 'userList', users: users.map(({ res, ...user }) => user) });
@@ -153,9 +195,6 @@ function broadcastUserList() {
 }
 
 // Function to broadcast start game message to all connected clients
-let currentBoard = null; // Variable to store the generated board
-let currentPlayerIndex = 0; // Variable to track the current player's turn
-
 function broadcastStartGame() {
     currentBoard = generateMinesweeperBoard(); // Generate and store the board
     currentPlayerIndex = Math.floor(Math.random() * users.length); // Pick a random client to start first
@@ -216,6 +255,7 @@ function broadcastGameEnd() {
     console.log(`Game end event broadcasted to all clients. Winner: ${winner}`);
 }
 
+// Server setup
 // Create HTTP server
 const server = http.createServer(app);
 
@@ -290,42 +330,3 @@ function generateMinesweeperBoard() {
 
     return board;
 }
-
-// Endpoint to generate a new Minesweeper board
-app.get("/generate-board", (req, res) => {
-    if (!currentBoard) {
-        currentBoard = generateMinesweeperBoard();
-    }
-    console.log("Returning generated Minesweeper board:", currentBoard);
-    res.json({ board: currentBoard });
-});
-
-// Endpoint to get the initial player
-app.get("/initial-player", (req, res) => {
-    const currentPlayer = users[currentPlayerIndex];
-    res.json({ displayName: currentPlayer.displayName });
-});
-
-// Endpoint to get the initial scores
-app.get("/initial-scores", (req, res) => {
-    res.json({ scores });
-});
-
-// Endpoint to clear all data and clients
-app.post('/clear-data', (req, res) => {
-    users = [];
-    scores = {};
-    currentBoard = null;
-    currentPlayerIndex = 0; // Reset the current player index
-    clients.forEach(client => client.end());
-    clients = [];
-    console.log("All data cleared and server reset.");
-
-    // Notify all clients about the reset state
-    clients.forEach(client => {
-        client.write('event: reset\n');
-        client.write('data: {}\n\n');
-    });
-
-    res.json({ message: 'All data cleared and server reset' });
-});
