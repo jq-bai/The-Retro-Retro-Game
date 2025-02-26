@@ -11,6 +11,7 @@ function App() {
     const [playerName, setPlayerName] = useState('');
     const [isReady, setIsReady] = useState(false);
     const [userList, setUserList] = useState([]);
+    const [scores, setScores] = useState({});
     const eventSourceRef = useRef(null);
 
     const joinGame = () => {
@@ -33,6 +34,8 @@ function App() {
                             setUserList(data.users);
                         } else if (data.type === 'startGame') {
                             setCurrentScreen('starting');
+                        } else if (data.type === 'scoreUpdate') {
+                            setScores(data.scores);
                         }
                     };
                     newEventSource.onerror = (error) => {

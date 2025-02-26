@@ -4,6 +4,7 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
     const [board, setBoard] = useState([]);
     const [revealedCells, setRevealedCells] = useState([]);
     const [currentPlayer, setCurrentPlayer] = useState(null);
+    const [scores, setScores] = useState({});
 
     useEffect(() => {
         console.log("useEffect triggered with displayName:", displayName);
@@ -13,12 +14,16 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                 console.log("Event received:", event.data); // Log any event received
                 const data = JSON.parse(event.data);
                 if (data.type === 'boardUpdate') {
-                    console.log("Board update received:", data.board, data.revealedCells); // Log the board update
+                    console.log("Board update received:", data.board, data.revealedCells, data.scores); // Log the board update
                     setBoard(data.board);
                     setRevealedCells(data.revealedCells);
+                    setScores(data.scores);
                 } else if (data.type === 'currentPlayer') {
                     console.log("Current player update received:", data.displayName); // Log the current player update
                     setCurrentPlayer(data.displayName);
+                } else if (data.type === 'scoreUpdate') {
+                    console.log("Score update received:", data.scores); // Log the score update
+                    setScores(data.scores);
                 }
                 // Handle other event types if needed
             };
@@ -53,6 +58,15 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                 setCurrentPlayer(data.displayName);
             })
             .catch(error => console.error("Error fetching initial player:", error));
+
+        // Fetch the initial scores from the server
+        fetch("/initial-scores")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched initial scores:", data.scores);
+                setScores(data.scores);
+            })
+            .catch(error => console.error("Error fetching initial scores:", error));
     }, []);
 
     const handleCellClick = (rowIndex, colIndex) => {
@@ -63,15 +77,20 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
         );
         setRevealedCells(newRevealedCells);
 
-        console.log("Sending updated board state to server:", board, newRevealedCells); // Log the updated board state
+        const isMine = board[rowIndex][colIndex] === 'M'; // Assuming 'M' represents a mine
+        const scoreChange = isMine ? -1 : 1;
+        const newScores = { ...scores, [displayName]: (scores[displayName] || 0) + scoreChange };
+        setScores(newScores);
 
-        // Send the updated board state to the server
+        console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores); // Log the updated board state and scores
+
+        // Send the updated board state and scores to the server
         fetch("/update-board", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ board, revealedCells: newRevealedCells, displayName }),
+            body: JSON.stringify({ board, revealedCells: newRevealedCells, scores: newScores, displayName }),
         }).catch(error => console.error("Error updating board:", error));
     };
 
@@ -82,6 +101,7 @@ const GameStateInitial = ({ userList, displayName, eventSource }) => {
                     <div key={user.displayName} className="user-card-container">
                         <div className="user-card">
                             {user.displayName} {user.displayName === displayName && "(You)"}
+                            <div>Score: {scores[user.displayName] || 0}</div>
                         </div>
                     </div>
                 ))}

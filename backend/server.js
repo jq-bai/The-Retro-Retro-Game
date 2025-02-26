@@ -20,6 +20,9 @@ const maxUsers = 10;
 // Store connected clients for SSE
 let clients = [];
 
+// Store scores
+let scores = {};
+
 // Handle requests for the main HTML file
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
@@ -43,6 +46,7 @@ app.post("/submit-name", (req, res) => {
 
     const user = { displayName, ready: false, res: null };
     users.push(user);
+    scores[displayName] = 0; // Initialize score for the new user
     console.log(`Received display name: ${displayName}`);
     res.json({ message: `Welcome, ${displayName}!`, users: users.map(({ res, ...user }) => user) });
     broadcastUserList();
@@ -90,6 +94,7 @@ app.get("/events", (req, res) => {
     req.on("close", () => {
         clients = clients.filter(client => client !== res);
         users = users.filter(user => user.res !== res);
+        delete scores[displayName]; // Remove the user's score
         console.log(`Client disconnected: ${displayName}`);
         broadcastUserList();
     });
@@ -97,10 +102,10 @@ app.get("/events", (req, res) => {
 
 // Endpoint to handle board updates
 app.post("/update-board", (req, res) => {
-    const { board, revealedCells, displayName } = req.body;
-    console.log("Received board update request:", board, revealedCells, displayName); // Log the board update request
-    if (!board || !revealedCells || !displayName) {
-        return res.status(400).json({ error: "Board state, revealed cells, and display name are required" });
+    const { board, revealedCells, scores: updatedScores, displayName } = req.body;
+    console.log("Received board update request:", board, revealedCells, updatedScores, displayName); // Log the board update request
+    if (!board || !revealedCells || !displayName || !updatedScores) {
+        return res.status(400).json({ error: "Board state, revealed cells, scores, and display name are required" });
     }
 
     // Check if it's the current player's turn
@@ -109,9 +114,12 @@ app.post("/update-board", (req, res) => {
         return res.status(403).json({ error: "It's not your turn" });
     }
 
-    // Broadcast the updated board state to all connected clients
-    console.log("Calling broadcastBoardUpdate with board:", board, revealedCells); // Log before calling the function
-    broadcastBoardUpdate(board, revealedCells);
+    // Update scores
+    scores = updatedScores;
+
+    // Broadcast the updated board state and scores to all connected clients
+    console.log("Calling broadcastBoardUpdate with board:", board, revealedCells, scores); // Log before calling the function
+    broadcastBoardUpdate(board, revealedCells, scores);
 
     // Rotate to the next player
     currentPlayerIndex = (currentPlayerIndex + 1) % users.length;
@@ -144,8 +152,8 @@ function broadcastStartGame() {
 }
 
 // Function to broadcast board updates to all connected clients
-function broadcastBoardUpdate(board, revealedCells) {
-    const boardUpdateMessage = JSON.stringify({ type: 'boardUpdate', board, revealedCells });
+function broadcastBoardUpdate(board, revealedCells, scores) {
+    const boardUpdateMessage = JSON.stringify({ type: 'boardUpdate', board, revealedCells, scores });
     clients.forEach(client => {
         client.write(`data: ${boardUpdateMessage}\n\n`);
         const user = users.find(user => user.res === client);
@@ -254,4 +262,9 @@ app.get("/generate-board", (req, res) => {
 app.get("/initial-player", (req, res) => {
     const currentPlayer = users[currentPlayerIndex];
     res.json({ displayName: currentPlayer.displayName });
+});
+
+// Endpoint to get the initial scores
+app.get("/initial-scores", (req, res) => {
+    res.json({ scores });
 });
