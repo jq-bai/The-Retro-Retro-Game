@@ -2,15 +2,22 @@
     This is the main game state
 */
 
-import React, { useState, useEffect } from 'react'; // Imports the useState and useEffect hooks from React
+import React, { useState, useEffect, useRef } from 'react'; // Imports the useState, useEffect, and useRef hooks from React
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'; // Imports the DotLottieReact component from the DotLottieReact library
 
 // GameStateInitial component with userList, displayName, eventSource, setCurrentScreen, and setWinner prop
 const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen, setWinner }) => {
-    const [board, setBoard] = useState([]);
-    const [revealedCells, setRevealedCells] = useState([]);
-    const [currentPlayer, setCurrentPlayer] = useState(null);
-    const [scores, setScores] = useState({});
+    const [board, setBoard] = useState([]); // State variable to track the game board
+    const [revealedCells, setRevealedCells] = useState([]); // State variable to track the revealed cells
+    const [currentPlayer, setCurrentPlayer] = useState(null); // State variable to track the current player
+    const [scores, setScores] = useState({}); // State variable to track the scores of all connected clients
+    const [dotLottie, setDotLottie] = React.useState(null); // State variable to track the DotLottie animation
     
+    // Function to handle the DotLottie animation
+    const dotLottieRefCallback = (dotLottie) => {
+        setDotLottie(dotLottie);
+      };
+
     // useEffect hook to handle the EventSource connection
     useEffect(() => {
         if (eventSource) {
@@ -108,6 +115,11 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         })
         .catch(error => console.error("Error updating board:", error));
         console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores);
+
+        // Play the Lottie animation once when a cell is clicked
+        if (dotLottie) {
+            dotLottie.play();
+          }
     };
 
     // DEV FUNCTION
@@ -157,6 +169,14 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                     </div>
                 ))}
             </div>
+            <br />
+            <DotLottieReact
+                src="https://lottie.host/6acb6297-3b63-47fa-90ff-a552ade44993/hSVEweDdDh.lottie"
+                loop={false} // Disable looping
+                autoplay={true}
+                dotLottieRefCallback={dotLottieRefCallback}
+                style={{ width: 'var(--size-large)', height: 'var(--size-large)' }}
+            />
             <br />
             {/* DEV BUTTON */}
             <button onClick={revealAllCells}>Reveal All Cells</button>
