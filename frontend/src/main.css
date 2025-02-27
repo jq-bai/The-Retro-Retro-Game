@@ -287,3 +287,22 @@ caption {
 .board-cell.mine {
     background-color: var(--color-red);
 }
+
+.last-action-message {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    border-style: solid;
+    border-color: var(--color-grey);
+    border-width: var(--border-width-xsmall);
+    background-color: transparent;
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-medium);
+}
