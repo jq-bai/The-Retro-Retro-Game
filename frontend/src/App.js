@@ -1,6 +1,6 @@
 /*
     This is the main React component for the app
-    This manages the flow of the game, handles user inputs, and communicates and synchornizes the interactions and states bnetween the clients and server
+    This manages the flow of the game, handles user inputs, and communicates and synchronizes the interactions and states between the clients and server
 */
 
 import React, { useState, useEffect, useRef } from 'react'; // Imports the useState, useEffect, and useRef hooks from React
@@ -14,7 +14,6 @@ import StartingScreen from './components/StartingScreen'; // Imports the Startin
 import GameStateInitial from './components/GameStateInitial'; // Imports the GameStateInitial component which is the main game state
 import GameStateEnd from './components/GameStateEnd'; // Imports the GameStateEnd component which is the end game state
 
-
 // Main App component
 function App() {
     // State variables
@@ -24,6 +23,7 @@ function App() {
     const [userList, setUserList] = useState([]); // Tracks the list of all connected clients
     const [scores, setScores] = useState({}); // Tracks the scores of all connected clients
     const [winner, setWinner] = useState(null); // Tracks the winner of the game
+    const [lastActionMessage, setLastActionMessage] = useState(''); // Tracks the last action message
     const eventSourceRef = useRef(null); // Reference for the EventSource connection
 
     // Function to join the game
@@ -62,6 +62,8 @@ function App() {
                             setCurrentScreen('gameStateEnd');
                         } else if (data.type === 'reset') {
                             handleReturnToTitle();
+                        } else if (data.type === 'lastAction') {
+                            setLastActionMessage(data.message);
                         }
                     };
 
@@ -97,7 +99,6 @@ function App() {
                 console.error('Error setting ready status:', error);
             });
     };
-
 
     // Function to return to the title screen after a game has ended
     // From GameStateEnd.js
@@ -143,7 +144,7 @@ function App() {
             {currentScreen === 'nameForm' && <NameFormScreen onSubmit={submitName} />} {/* Renders the NameFormScreen component */}
             {currentScreen === 'holding' && <HoldingScreen userList={userList} onReady={setReady} isReady={isReady} />} {/* Renders the HoldingScreen component */}
             {currentScreen === 'starting' && <StartingScreen userList={userList} onCountdownComplete={() => setCurrentScreen('gameState')} />} {/* Renders the StartingScreen component */}
-            {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} eventSource={eventSourceRef.current} setCurrentScreen={setCurrentScreen} setWinner={setWinner} />} {/* Renders the GameStateInitial component */}
+            {currentScreen === 'gameState' && <GameStateInitial userList={userList} displayName={playerName} eventSource={eventSourceRef.current} setCurrentScreen={setCurrentScreen} setWinner={setWinner} lastActionMessage={lastActionMessage} setLastActionMessage={setLastActionMessage} />} {/* Renders the GameStateInitial component */}
             {currentScreen === 'gameStateEnd' && <GameStateEnd winner={winner} onReturnToTitle={handleReturnToTitle} />} {/* Renders the GameStateEnd component */}
         </div>
     );

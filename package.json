@@ -1,6 +1,6 @@
 {
   "name": "the-retro-retro-game",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A retro-feeling retro(spective) game that makes it easier for teams to bond, be it in person or online.",
   "main": "backend/server.js",
   "scripts": {

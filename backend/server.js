@@ -141,10 +141,10 @@ app.get("/initial-scores", (req, res) => {
 
 // Endpoint to handle board updates
 app.post("/update-board", (req, res) => {
-    const { board, revealedCells, scores: updatedScores, displayName } = req.body;
-    console.log("Received board update request:", board, revealedCells, updatedScores, displayName); // Log the board update request
-    if (!board || !revealedCells || !displayName || !updatedScores) {
-        return res.status(400).json({ error: "Board state, revealed cells, scores, and display name are required" });
+    const { board, revealedCells, scores: updatedScores, displayName, lastOpenedCell } = req.body;
+    console.log("Received board update request:", board, revealedCells, updatedScores, displayName, lastOpenedCell); // Log the board update request
+    if (!board || !revealedCells || !displayName || !updatedScores || !lastOpenedCell) {
+        return res.status(400).json({ error: "Board state, revealed cells, scores, display name, and last opened cell are required" });
     }
 
     // Check if it's the current player's turn
@@ -155,6 +155,19 @@ app.post("/update-board", (req, res) => {
 
     // Update scores
     scores = updatedScores;
+
+    // Determine the type of the last opened cell
+    const { row, col } = lastOpenedCell;
+    const cellType = board[row][col] === '💣' ? 'mine' : 'safe';
+
+    // Create the last action message
+    const lastActionMessage = `${displayName} has opened a ${cellType} cell!`;
+
+    // Broadcast the last action message to all connected clients
+    const lastActionMessageJSON = JSON.stringify({ type: 'lastAction', message: lastActionMessage });
+    clients.forEach(client => {
+        client.write(`data: ${lastActionMessageJSON}\n\n`);
+    });
 
     // Broadcast the updated board state and scores to all connected clients
     console.log("Calling broadcastBoardUpdate with board:", board, revealedCells, scores); // Log before calling the function
