@@ -189,7 +189,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                 style={{ width: 'var(--size-large)', height: 'var(--size-large)' }}
             />
             {/* DEV BUTTON */}
-<button onClick={revealAllCells}>Reveal All Cells</button>
+            {/* <button onClick={revealAllCells}>Reveal All Cells</button> */}
         </div>
     );
 };
