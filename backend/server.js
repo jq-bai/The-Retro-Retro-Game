@@ -6,15 +6,23 @@ const http = require("http"); // Imports the HTTP module for creating the server
 const path = require("path"); // Imports the Path module for working with file paths
 const express = require("express"); // Imports the Express library for creating the server
 const bodyParser = require("body-parser"); // Imports the body-parser library for parsing JSON bodies
+const RateLimit = require("express-rate-limit"); // Imports the express-rate-limit library for rate limiting
 
 // Create an Express server
 const app = express();
 const host = "0.0.0.0";
 const port = process.env.PORT || 8000;
 
-// Middleware to parse JSON bodies and serve static files
+// Sets up rate limiter: maximum of 100000 requests per 15 minutes
+const limiter = RateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100000,
+});
+
+// Middleware to parse JSON bodies and serve static files with a rate limiter applied
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "../frontend/build")));
+app.use(limiter);
 
 // Data storage
 let users = []; // Array to store connected users

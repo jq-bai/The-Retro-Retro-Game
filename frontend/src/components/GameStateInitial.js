@@ -17,6 +17,7 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
     // Function to handle the DotLottie animation
     const dotLottieRefCallback = (dotLottie) => {
         setDotLottie(dotLottie);
+        console.log("DotLottie animation loaded");
     };
 
     // useEffect hook to handle the EventSource connection
@@ -90,6 +91,12 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
     const handleCellClick = (rowIndex, colIndex) => {
         if (revealedCells[rowIndex][colIndex] || currentPlayer !== displayName) return; // Prevents clicking on the same cell more than once or if it's not the player's turn
 
+        // Plays the Lottie animation once when a cell is clicked
+        if (dotLottie) {
+            dotLottie.play();
+            console.log("Playing DotLottie animation");
+        }
+
         const newRevealedCells = revealedCells.map((row, rIdx) => 
             row.map((cell, cIdx) => (rIdx === rowIndex && cIdx === colIndex ? true : cell))
         );
@@ -119,11 +126,25 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
         })
         .catch(error => console.error("Error updating board:", error));
         console.log("Sending updated board state and scores to server:", board, newRevealedCells, newScores);
+    };
 
-        // Plays the Lottie animation once when a cell is clicked
-        if (dotLottie) {
-            dotLottie.play();
-        }
+
+    // DEV FUNCTIONS
+    // Function to reveal all cells for testing purposes
+    const revealAllCells = () => {
+        const newRevealedCells = revealedCells.map(row => row.map(() => true));
+        setRevealedCells(newRevealedCells);
+        console.log("All cells revealed for testing purposes");
+        const newScores = { ...scores };
+        const dataToSend = { board, revealedCells: newRevealedCells, scores: newScores, displayName, lastOpenedCell: { row: 1, col: 1 } };
+        console.log("Sending data to server:", dataToSend);
+        fetch("/update-board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+        }).catch(error => console.error("Error updating board:", error));
     };
 
     // Renders JSX visual elements
@@ -168,27 +189,9 @@ const GameStateInitial = ({ userList, displayName, eventSource, setCurrentScreen
                 style={{ width: 'var(--size-large)', height: 'var(--size-large)' }}
             />
             {/* DEV BUTTON */}
-            {/* <button onClick={revealAllCells}>Reveal All Cells</button> */}
+<button onClick={revealAllCells}>Reveal All Cells</button>
         </div>
     );
-
-    // DEV FUNCTIONS
-    // Function to reveal all cells for testing purposes
-    const revealAllCells = () => {
-        const newRevealedCells = revealedCells.map(row => row.map(() => true));
-        setRevealedCells(newRevealedCells);
-        console.log("All cells revealed for testing purposes");
-        const newScores = { ...scores };
-        const dataToSend = { board, revealedCells: newRevealedCells, scores: newScores, displayName, lastOpenedCell: { row: 1, col: 1 } };
-        console.log("Sending data to server:", dataToSend);
-        fetch("/update-board", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dataToSend),
-        }).catch(error => console.error("Error updating board:", error));
-    };
 };
 
 export default GameStateInitial;
