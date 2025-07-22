@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@dotlottie/player-component": "^2.7.12",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "express": "^4.21.2",
     "react-lottie-player": "^2.1.0",
     "ws": "^8.18.0",
